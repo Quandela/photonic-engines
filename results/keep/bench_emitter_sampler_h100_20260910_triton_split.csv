@@ -1,0 +1,5 @@
+n,m,shots,triton_ms_per_sample,R_mean,R_max_step,triton_terms_pct,triton_kernel_pct,triton_post_pct,lanes_last,fock_ms_per_sample,fock_backend,ratio_last_impl
+12,24,256,9.0367,13.35,30.3,99,0,1,512,0.001,cuda,8779.6
+16,32,256,20.8442,38.28,101.3,99,1,0,512,0.0028,cuda,7563.5
+20,40,256,50.223,108.17,329.6,84,15,0,512,0.0168,cuda,2980.9
+24,48,256,292.0662,325.0,1081.2,35,65,0,512,0.1839,cuda,1588.1

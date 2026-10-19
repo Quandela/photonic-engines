@@ -1,0 +1,53 @@
+% Time-loop device (ORCA-style drawing, left), the Perceval circuit with a delay line (code and
+% drawing, middle) and its unrolling over three periods (right).
+% \input inside \begin{tikzpicture}[scale=...] ... \end{tikzpicture}
+% ---- ORCA-style: one rail, a programmable coupler, a fibre loop on top
+\begin{scope}[xshift=-9.6cm, yshift=1.2cm, every node/.style={font=\scriptsize}]
+  \draw[thick] (0,0.5) -- (4.6,0.5);
+  \foreach \x/\t in {0.15/3, 0.6/2, 1.05/1} { \draw[fill=blue!60, draw=blue!60!black] (\x,0.5) ellipse (0.08 and 0.15); \node[below] at (\x,0.32) {$t{=}\t$}; }
+  \draw[fill=green!20,thick] (1.35,0.25) rectangle (2.05,0.75); \node[font=\tiny] at (1.7,0.5) {PS($\varphi_t$)};
+  \draw[fill=blue!15,thick] (2.3,0.15) rectangle (3.1,0.85); \node[font=\tiny] at (2.7,0.5) {BS($\theta_t$)};
+  \draw[thick, orange!80!black] (2.7,0.85) arc (-90:270:0.65);
+  \node[orange!80!black] at (2.7,2.35) {loop, delay $\ell$};
+  \draw[fill=gray!20,thick] (4.0,0.25) rectangle (4.5,0.75); \node[right] at (4.5,0.5) {det.};
+  \node[align=center] at (2.4,-0.5) {time-bin loop device: coupler angle $\theta_t$ and\\phase $\varphi_t$ programmed \emph{per bin}};
+\end{scope}
+\draw[-{Stealth[length=3mm]}, line width=1.2pt, gray!70] (-4.4,1.7) -- (-1.9,1.7) node[midway, above, font=\scriptsize, text=black] {as a circuit};
+% ---- Perceval code of the circuit
+\node[draw=gray!70, fill=gray!8, rounded corners=2pt, inner sep=3pt, anchor=south, align=left, font=\ttfamily\scriptsize] at (2.4,3.0) {
+  c = Circuit(2)\\
+  \ \ .add(0, BS(theta))\\
+  \ \ .add(1, TD(1))\\
+  \ \ .add(0, PS(phi))\\
+  \ \ .add(0, BS(theta))};
+\begin{scope}[yshift=1.2cm, every node/.style={font=\scriptsize}]
+  \draw[thick] (0,1) -- (4.9,1);
+  \draw[thick] (0,0) -- (4.9,0);
+  \node[left] at (0,1) {mode 0};
+  \node[left] at (0,0) {mode 1};
+  \draw[fill=blue!15,thick] (0.6,-0.3) rectangle (1.4,1.3); \node[font=\tiny] at (1,0.5) {BS($\theta$)};
+  \draw[fill=orange!25,thick] (1.9,-0.3) rectangle (2.9,0.3); \node at (2.4,0) {TD(1)};
+  \draw[fill=green!20,thick] (2.5,0.75) rectangle (3.3,1.25); \node[font=\tiny] at (2.9,1) {PS($\varphi$)};
+  \draw[fill=blue!15,thick] (3.8,-0.3) rectangle (4.6,1.3); \node[font=\tiny] at (4.2,0.5) {BS($\theta$)};
+  \node[align=center] at (2.4,-1.1) {one period, repeated every clock cycle;\\TD delays mode 1 by one period};
+\end{scope}
+% ---- arrow: one period -> unrolled
+\draw[-{Stealth[length=3mm]}, line width=1.2pt, gray!70] (5.3,1.7) -- (7.6,1.7) node[midway, above, font=\scriptsize, text=black] {unroll over $T$};
+\begin{scope}[xshift=9.6cm, every node/.style={font=\scriptsize}]
+  \foreach \p/\y in {1/4, 2/2.5, 3/1} {
+    \draw[thick] (0,\y) -- (5.4,\y);
+    \draw[thick] (0,\y-0.6) -- (1.5,\y-0.6);
+    \draw[thick] (4.0,\y-0.6) -- (5.4,\y-0.6);
+    \node[left] at (0,\y) {$p=\p$, mode 0};
+    \node[left] at (0,\y-0.6) {$p=\p$, mode 1};
+    \draw[fill=blue!15,thick] (0.8,\y-0.85) rectangle (1.5,\y+0.25); \node[font=\tiny] at (1.15,\y-0.3) {BS($\theta_\p$)};
+    \draw[fill=green!20,thick] (2.3,\y-0.2) rectangle (3.0,\y+0.2); \node[font=\tiny] at (2.65,\y) {PS($\varphi_\p$)};
+    \draw[fill=blue!15,thick] (4.0,\y-0.85) rectangle (4.7,\y+0.25); \node[font=\tiny] at (4.35,\y-0.3) {BS($\theta_\p$)};
+  }
+  \foreach \ya/\yb in {3.4/1.9, 1.9/0.4} {
+    \draw[thick,orange!80!black] (1.5,\ya) -- (2.2,\ya) .. controls (3.2,\ya) and (3.0,\yb) .. (4.0,\yb);
+  }
+  \draw[thick,orange!80!black,dashed] (1.5,0.4) -- (2.2,0.4) .. controls (2.8,0.4) and (2.8,-0.1) .. (3.2,-0.2) node[right] {slot: leaves after $T$};
+  \draw[thick,orange!80!black,dashed] (2.9,4.4) node[left] {slot: empty} .. controls (3.3,4.4) and (3.3,3.4) .. (4.0,3.4);
+  \node[align=center] at (2.7,-1.1) {unrolled: $m' = Tm + L$ modes, $U = B_T \cdots B_1$ in causal order;\\gate $B_p$ touches only period $p$ and the delay slot (per-bin settings: one $\theta_p, \varphi_p$ per gate)};
+\end{scope}

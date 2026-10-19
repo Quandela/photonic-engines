@@ -1,0 +1,23 @@
+circuit,n,m,param,target,level,compile_s,law_variant,tvd,floor,law_ok,build_ms,per_sample_ms,s_per_sample_at_max_shots,times,note
+loop,4,9,1,tensornet,5,0.0,,,,,57.4184615729573,0.00024142704270427022,5.9832732e-06,1:0.05742 10000:0.05983,
+loop,4,9,1,tensornet-mps,5,0.0,,,,,84.95512104610461,0.0002689538953895383,8.764466e-06,1:0.08496 10000:0.08764,
+loop,6,13,1,tensornet,7,3.3511795341037214,,,,,781.2041793707372,0.3468656292629263,0.0004249860472,1:0.7816 10000:4.25,
+loop,6,13,1,tensornet-mps,7,3.3383770450018346,,,,,846.1301147891788,0.4141982108210821,0.0004988112223,1:0.8465 10000:4.988,
+loop,8,17,1,tensornet,9,3.3394070928916335,,,,,,,,,timeout after 900 s
+loop,8,17,1,tensornet-mps,9,3.3374100872315466,,,,,,,,,timeout after 900 s
+loop,10,21,1,tensornet,11,,,,,,,,,,"failed at n=8, m=17"
+loop,10,21,1,tensornet-mps,11,,,,,,,,,,"failed at n=8, m=17"
+loop,12,25,1,tensornet,13,,,,,,,,,,"failed at n=8, m=17"
+loop,12,25,1,tensornet-mps,13,,,,,,,,,,"failed at n=8, m=17"
+loop,16,33,1,tensornet,17,,,,,,,,,,"failed at n=8, m=17"
+loop,16,33,1,tensornet-mps,17,,,,,,,,,,"failed at n=8, m=17"
+loop,20,41,1,tensornet,21,,,,,,,,,,"failed at n=8, m=17"
+loop,20,41,1,tensornet-mps,21,,,,,,,,,,"failed at n=8, m=17"
+loop,24,49,1,tensornet,25,,,,,,,,,,"failed at n=8, m=17"
+loop,24,49,1,tensornet-mps,25,,,,,,,,,,"failed at n=8, m=17"
+loop,32,65,1,tensornet,33,,,,,,,,,,"failed at n=8, m=17"
+loop,32,65,1,tensornet-mps,33,,,,,,,,,,"failed at n=8, m=17"
+loop,40,81,1,tensornet,41,,,,,,,,,,"failed at n=8, m=17"
+loop,40,81,1,tensornet-mps,41,,,,,,,,,,"failed at n=8, m=17"
+loop,48,97,1,tensornet,49,,,,,,,,,,"failed at n=8, m=17"
+loop,48,97,1,tensornet-mps,49,,,,,,,,,,"failed at n=8, m=17"

@@ -1,0 +1,2 @@
+engine,ratio,eta,n_star,eta_n_star,m_star,rho_eff,rho_pred,n_pred,bracket,seconds
+sbs,2.0,0.5,31.2,15.6,62.4,1.299,1.4042245370370372,34.0,"n=31 at 1.21/s, n=32 at 0.36/s  ->  n* = 31.2",4117

@@ -1,0 +1,2 @@
+circuit,case,n,m,fock_dim,sv_dim,target,level,build_ms,per_sample_ms,tvd,tvd_floor,note
+loop,20:1,20,41,4191844505805495,1625515384162495488635310116741260158419511738394408821,ours,,8.231815082152504,0.024210995863060334,nan,,"chain rule, exact"

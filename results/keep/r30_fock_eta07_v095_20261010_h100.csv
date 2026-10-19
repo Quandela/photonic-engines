@@ -1,0 +1,4 @@
+engine,ratio,eta,x,n,m,samples_per_s,ms_per_sample,seconds,shots,phi,sites,layout,eta_post,r,schmidt,impl,estimator,raw_rate,est_err,shot_cap,censored,s_1e4,ext_1e4,s_1e6,ext_1e6,s_1e8,ext_1e8,bracket_censored
+fock,2.0,0.7,0.974679,49,98,1.4357956496847346,696.4779425397865,518.0,256,,,,,,,,,,,,,,,,,,,0
+fock,2.0,0.7,0.974679,50,100,1.1926119950117424,838.4956751924619,1925.0,2048,,,,,,,,,,,,,,,,,,,0
+fock,2.0,0.7,0.974679,51,102,0.6726956898766466,1486.5562765585307,3438.3,2048,,,,,,,,,,,,,,,,,,,0

@@ -1,0 +1,334 @@
+stamp,date_utc,status,jobs,seconds,gpu,torch,benches,same_as_release,files
+20260909_204324,Wed Sep  9 18:43:40 UTC 2026,failed,1,0,NVIDIA H100 PCIe,2.14.0+cu130,,,1
+20260909_204643,Wed Sep  9 18:46:57 UTC 2026,ok,1,129,NVIDIA H100 PCIe,2.14.0+cu130,,,1
+20260909_222512,Wed Sep  9 20:25:26 UTC 2026,failed,7,0,NVIDIA H100 PCIe,2.14.0+cu130,,,7
+20260909_222819,Wed Sep  9 20:28:32 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,1
+20260909_224440,Wed Sep  9 20:44:54 UTC 2026,ok,2,161,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,3
+20260909_225207,Wed Sep  9 20:52:20 UTC 2026,ok,1,515,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,2
+20260909_230401,Wed Sep  9 21:04:15 UTC 2026,ok,1,516,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,2
+20260909_232111,Wed Sep  9 21:21:25 UTC 2026,ok,2,640,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,3
+20260910_070605,Thu Sep 10 05:06:18 UTC 2026,failed,3,31,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_slos.py,,4
+20260910_092723,Thu Sep 10 07:27:37 UTC 2026,failed,3,235,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_slos.py,,4
+20260910_093505,Thu Sep 10 07:35:18 UTC 2026,failed,3,237,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_slos.py,,4
+20260910_094102,Thu Sep 10 07:41:15 UTC 2026,failed,1,16,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,1
+20260910_094330,Thu Sep 10 07:43:44 UTC 2026,failed,1,12,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_slos.py,,1
+20260910_100723,Thu Sep 10 08:07:36 UTC 2026,failed,2,6,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py tests/clifford/test_emitter_triton.py,,2
+20260910_101348,Thu Sep 10 08:14:01 UTC 2026,failed,2,162,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py tests/clifford/test_emitter_triton.py,,2
+20260910_102118,Thu Sep 10 08:21:32 UTC 2026,ok,1,117,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py,,2
+20260910_103245,Thu Sep 10 08:32:58 UTC 2026,incomplete,2,7,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_tune.py tests/clifford/test_emitter_triton.py,,2
+20260910_143040,Thu Sep 10 12:30:54 UTC 2026,ok,4,399,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_tune.py,,5
+20260910_144505,Thu Sep 10 12:45:18 UTC 2026,ok,3,383,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_tune.py,,4
+20260910_163103,Thu Sep 10 14:31:17 UTC 2026,ok,3,656,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_tune.py,,4
+20260910_170310,Thu Sep 10 15:03:24 UTC 2026,ok,3,1294,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/bench_emitter_tune.py,,4
+20260910_174928,Thu Sep 10 15:49:41 UTC 2026,failed,4,316,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/profile_emitter_step.py,,5
+20260910_180153,Thu Sep 10 16:02:07 UTC 2026,ok,1,9,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py,,2
+20260910_211038,Thu Sep 10 19:10:52 UTC 2026,ok,2,13,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_sampler.py bench/profile_emitter_step.py,,3
+20260910_220848,Thu Sep 10 20:09:02 UTC 2026,ok,1,7907,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,,18
+20260911_092830,Fri Sep 11 07:28:45 UTC 2026,failed,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/timeloop_frontier.py,,1
+20260911_093110,Fri Sep 11 07:31:23 UTC 2026,failed,1,5954,NVIDIA H100 PCIe,2.14.0+cu130,bench/timeloop_frontier.py,,1
+20260911_123733,Fri Sep 11 10:37:47 UTC 2026,ok,1,26632,NVIDIA H100 PCIe,2.14.0+cu130,bench/timeloop_frontier.py,,1
+20260911_163243,Fri Sep 11 14:32:50 UTC 2026,ok,1,807,,,,,2
+20260911_170558,Fri Sep 11 15:06:03 UTC 2026,ok,1,856,,,,,2
+20260911_205844,Fri Sep 11 18:58:50 UTC 2026,failed,1,0,,,,,1
+20260911_210008,Fri Sep 11 19:00:13 UTC 2026,ok,1,91,,,,,2
+20260912_094217,Sat Sep 12 07:42:31 UTC 2026,failed,1,2,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_loss.py,,1
+20260912_094616,Sat Sep 12 07:46:29 UTC 2026,ok,1,154,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_loss.py,,2
+20260912_183106,Sat Sep 12 16:31:19 UTC 2026,ok,1,8,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,2
+20260912_184418,Sat Sep 12 16:44:31 UTC 2026,ok,1,42,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,2
+20260912_185503,Sat Sep 12 16:55:16 UTC 2026,ok,1,667,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,2
+20260912_190841,Sat Sep 12 17:08:54 UTC 2026,ok,1,1307,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,2
+20260912_215701,Sat Sep 12 19:57:14 UTC 2026,failed,1,1,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,1
+20260912_220019,Sat Sep 12 20:00:32 UTC 2026,failed,1,1,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,1
+20260912_220323,Sat Sep 12 20:03:36 UTC 2026,ok,1,163,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_frontier.py,,2
+20260913_191947,Sun Sep 13 17:20:01 UTC 2026,failed,3,5,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_ticks.py,,3
+20260913_193014,Sun Sep 13 17:30:27 UTC 2026,ok,3,562,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_ticks.py,,6
+20260913_200833,Sun Sep 13 18:08:46 UTC 2026,ok,1,77,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_ticks.py,,2
+20260915_170941,Tue Sep 15 15:09:55 UTC 2026,ok,5,146,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cofactor_variants.py bench/bench_step_profile.py,,10
+20260915_175511,Tue Sep 15 15:55:25 UTC 2026,ok,5,210,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cofactor_variants.py bench/bench_step_profile.py,,13
+20260915_180602,Tue Sep 15 16:06:16 UTC 2026,ok,4,323,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cofactor_variants.py bench/bench_step_profile.py,,13
+20260915_182128,Tue Sep 15 16:21:41 UTC 2026,ok,6,1302,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cofactor_variants.py bench/map_threshold.py tests/clifford/check_cuda.py tests/clifford/check_large_n.py tests/clifford/check_multi.py,,12
+20260915_222632,Tue Sep 15 20:26:46 UTC 2026,ok,7,12478,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py bench/map_threshold.py bench/merge_frontier.py bench/plot_frontier.py bench/time_n.py,,26
+20260916_105721,Wed Sep 16 08:57:34 UTC 2026,ok,3,1380,NVIDIA H100 PCIe,2.14.0+cu130,bench/rate_series.py,,6
+20260916_135011,Wed Sep 16 11:50:24 UTC 2026,ok,3,1278,NVIDIA H100 PCIe,2.14.0+cu130,bench/rate_series.py,,6
+20260916_153618,Wed Sep 16 13:36:30 UTC 2026,ok,7,12,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_gram.py,,14
+20260916_155718,Wed Sep 16 13:57:31 UTC 2026,ok,3,4980,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_tune.py bench/compile_check_emitter.py,,3
+20260916_191446,Wed Sep 16 17:15:15 UTC 2026,ok,5,312,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_tune.py bench/compile_check_emitter.py tests/clifford/test_emitter_sampler.py tests/clifford/test_emitter_triton.py,,5
+20260916_200342,Wed Sep 16 18:04:07 UTC 2026,ok,6,276,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_tune.py bench/compile_check_emitter.py tests/clifford/test_emitter_sampler.py tests/clifford/test_emitter_triton.py,,6
+20260917_105611,Thu Sep 17 08:56:24 UTC 2026,failed,4,68,NVIDIA H100 PCIe,2.14.0+cu130,bench/esbs_design_plane.py bench/estimate_time.py,,4
+20260917_110557,Thu Sep 17 09:06:10 UTC 2026,ok,4,2476,NVIDIA H100 PCIe,2.14.0+cu130,bench/esbs_design_plane.py bench/estimate_time.py,,15
+20260917_145726,Thu Sep 17 12:57:40 UTC 2026,ok,1,4734,NVIDIA H100 PCIe,2.14.0+cu130,bench/esbs_train_signal.py,,2
+20260917_182540,Thu Sep 17 16:25:53 UTC 2026,ok,1,6518,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py,,10
+20260917_214209,Thu Sep 17 19:42:22 UTC 2026,ok,1,18097,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py bench/loss_cliff.py,,9
+20260918_084620,Fri Sep 18 06:46:33 UTC 2026,ok,1,25697,NVIDIA H100 PCIe,2.14.0+cu130,bench/esbs_fusion.py,,8
+20260918_160033,Fri Sep 18 14:00:52 UTC 2026,ok,1,795,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py,,4
+20260918_173719,Fri Sep 18 15:37:33 UTC 2026,ok,1,12,NVIDIA H100 PCIe,2.14.0+cu130,bench/loss_unravel_check.py,,1
+20260918_174153,Fri Sep 18 15:42:08 UTC 2026,ok,1,4317,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py,,8
+20260918_222700,Fri Sep 18 20:27:14 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/esbs_fusion.py,,1
+20260919_084900,Sat Sep 19 06:49:14 UTC 2026,ok,1,21602,NVIDIA H100 PCIe,2.14.0+cu130,bench/esbs_fusion.py,,3
+20260919_152534,Sat Sep 19 13:25:48 UTC 2026,incomplete,7,16,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_product_amp.py bench/bench_product_slos.py bench/sbs_terms.py tests/slos/test_product.py,,11
+20260919_181625,Sat Sep 19 16:16:39 UTC 2026,failed,9,83,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_product_amp.py bench/bench_product_slos.py bench/sbs_terms.py tests/test_loss.py tests/test_states.py tests/test_tutorial.py,,16
+20260919_194029,Sat Sep 19 17:40:44 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,,1
+20260919_195403,Sat Sep 19 17:54:17 UTC 2026,ok,1,4653,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,,11
+20260919_224559,Sat Sep 19 20:46:14 UTC 2026,ok,3,10069,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_product_sampler.py bench/map_threshold.py,,19
+20260920_092711,Sun Sep 20 07:27:25 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,,18
+20260920_121038,Sun Sep 20 10:10:51 UTC 2026,ok,3,5916,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_product_sampler.py bench/map_threshold.py,,11
+20260920_165029,Sun Sep 20 14:50:43 UTC 2026,ok,3,9454,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_product_sampler.py bench/map_threshold.py,,16
+20260920_193154,Sun Sep 20 17:32:08 UTC 2026,ok,2,12081,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/frontier_loss.py,,18
+20260921_051530,Mon Sep 21 03:15:44 UTC 2026,ok,1,6534,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_indist.py,,14
+20260921_071710,Mon Sep 21 05:17:46 UTC 2026,ok,1,2173,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py,,5
+20260921_080421,Mon Sep 21 06:05:51 UTC 2026,ok,1,4118,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py,,4
+20260921_094327,Mon Sep 21 07:43:40 UTC 2026,ok,2,4100,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_indist.py,,11
+20260921_151344,Mon Sep 21 13:13:58 UTC 2026,failed,8,1361,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py bench/adaptive_overhead.py tests/test_adaptive.py,,13
+20260921_173507,Mon Sep 21 15:35:21 UTC 2026,ok,3,12,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py tests/test_adaptive.py,,3
+20260921_173919,Mon Sep 21 15:39:33 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,2
+20260921_204427,Mon Sep 21 18:44:41 UTC 2026,ok,4,89,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py tests/test_adaptive.py,,4
+20260921_205843,Mon Sep 21 18:58:56 UTC 2026,ok,3,3859,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,6
+20260921_225834,Mon Sep 21 20:58:47 UTC 2026,ok,3,2921,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,5
+20260922_071308,Tue Sep 22 05:13:21 UTC 2026,ok,2,1512,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,4
+20260922_074317,Tue Sep 22 05:43:30 UTC 2026,ok,1,2346,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,4
+20260922_092841,Tue Sep 22 07:28:59 UTC 2026,ok,1,2403,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,7
+20260922_131122,Tue Sep 22 11:11:37 UTC 2026,ok,1,2124,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,3
+20260922_140949,Tue Sep 22 12:10:03 UTC 2026,ok,2,3706,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,8
+20260922_151243,Tue Sep 22 13:12:56 UTC 2026,ok,1,4262,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,4
+20260922_162506,Tue Sep 22 14:25:20 UTC 2026,ok,2,2133,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,5
+20260922_191049,Tue Sep 22 17:11:03 UTC 2026,ok,1,3538,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,4
+20260922_202903,Tue Sep 22 18:29:17 UTC 2026,ok,1,2374,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,4
+20260922_211901,Tue Sep 22 19:19:15 UTC 2026,ok,4,12967,NVIDIA H100 PCIe,2.14.0+cu130,bench/nlbs_frontier.py,,42
+20260923_080913,Wed Sep 23 06:09:28 UTC 2026,ok,2,6578,NVIDIA H100 PCIe,2.14.0+cu130,bench/nlbs_frontier.py,,20
+20260923_111505,Wed Sep 23 09:15:18 UTC 2026,ok,1,3008,NVIDIA H100 PCIe,2.14.0+cu130,bench/nlbs_frontier.py,,9
+20260923_181143,Wed Sep 23 16:12:02 UTC 2026,ok,1,2980,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,,3
+20260923_210540,Wed Sep 23 19:05:54 UTC 2026,ok,1,57,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py tests/test_adaptive.py,,1
+20260923_221816,Wed Sep 23 20:18:30 UTC 2026,failed,5,8,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py,,7
+20260923_222152,Wed Sep 23 20:22:06 UTC 2026,failed,6,71,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py,,8
+20260923_223900,Wed Sep 23 20:39:14 UTC 2026,failed,6,15,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py,,8
+20260923_224054,Wed Sep 23 20:41:07 UTC 2026,failed,2,29,NVIDIA H100 PCIe,2.14.0+cu130,tests/check_gaussian_gpu.py tests/test_gaussian.py,,2
+20260923_224734,Wed Sep 23 20:47:48 UTC 2026,ok,7,173,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py bench/cudaq_qudit_levels_repro.py,,11
+20260923_225057,Wed Sep 23 20:51:10 UTC 2026,ok,1,1040,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,,2
+20260924_071956,Thu Sep 24 05:20:10 UTC 2026,ok,4,841,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_gbs_impl.py bench/find_threshold.py tests/check_gaussian_gpu.py,,7
+20260924_084540,Thu Sep 24 06:45:55 UTC 2026,incomplete,4,10267,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_gbs_impl.py bench/find_threshold.py,,6
+20260924_124226,Thu Sep 24 10:42:41 UTC 2026,ok,1,1504,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,2
+20260924_134210,Thu Sep 24 11:42:24 UTC 2026,ok,7,173,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py bench/cudaq_qudit_levels_repro.py,,11
+20260924_141521,Thu Sep 24 12:15:35 UTC 2026,ok,2,1082,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,4
+20260924_151803,Thu Sep 24 13:18:18 UTC 2026,ok,2,1720,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,4
+20260924_162756,Thu Sep 24 14:28:10 UTC 2026,ok,2,1377,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,4
+20260924_171312,Thu Sep 24 15:13:27 UTC 2026,ok,1,959,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,2
+20260924_180802,Thu Sep 24 16:08:16 UTC 2026,ok,3,1724,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,6
+20260924_190851,Thu Sep 24 17:09:05 UTC 2026,ok,3,1468,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,6
+20260924_195027,Thu Sep 24 17:50:41 UTC 2026,ok,3,1631,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,6
+20260924_202647,Thu Sep 24 18:27:02 UTC 2026,ok,3,1390,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,6
+20260924_211532,Thu Sep 24 19:15:46 UTC 2026,ok,1,654,NVIDIA H100 PCIe,2.14.0+cu130,bench/profile_gbs.py,,2
+20260924_214308,Thu Sep 24 19:43:22 UTC 2026,ok,1,18,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_sieve_kernel.py,,2
+20260924_221455,Thu Sep 24 20:15:09 UTC 2026,ok,4,1628,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_sieve_kernel.py bench/profile_gbs.py,,8
+20260924_234127,Thu Sep 24 21:41:41 UTC 2026,ok,1,368,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,5
+20260925_075752,Fri Sep 25 05:58:06 UTC 2026,ok,1,1975,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,3
+20260925_090352,Fri Sep 25 07:04:06 UTC 2026,ok,1,70,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,6
+20260925_095009,Fri Sep 25 07:50:23 UTC 2026,ok,1,213,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,4
+20260925_223131,Fri Sep 25 20:31:45 UTC 2026,ok,1,2725,NVIDIA H100 PCIe,2.14.0+cu130,bench/timeloop_ladder_frontier.py,,1
+20260926_100655,Sat Sep 26 08:07:09 UTC 2026,failed,19,205,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_ticks.py,,21
+20260926_201513,Sat Sep 26 18:15:27 UTC 2026,ok,3,240,NVIDIA H100 PCIe,2.14.0+cu130,bench/sequence_ticks.py tests/sequence/check_label_amplitudes_gpu.py,,9
+20260927_080529,Sun Sep 27 06:05:43 UTC 2026,ok,1,2666,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_emitter_tune.py,,1
+20260927_110150,Sun Sep 27 09:02:04 UTC 2026,failed,2,348,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_emitter.py tests/clifford/check_cuda_emitter.py,,3
+20260927_121856,Sun Sep 27 10:19:11 UTC 2026,failed,1,41,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_emitter.py bench/map_threshold.py tests/clifford/check_cuda_emitter.py,,1
+20260927_125541,Sun Sep 27 10:55:55 UTC 2026,ok,1,3642,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_emitter.py bench/map_threshold.py tests/clifford/check_cuda_emitter.py,,10
+20260927_150921,Sun Sep 27 13:09:36 UTC 2026,ok,1,198,NVIDIA H100 PCIe,2.14.0+cu130,tests/clifford/check_cuda_emitter.py,,1
+20260927_153353,Sun Sep 27 13:34:07 UTC 2026,ok,1,332,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_emitter.py tests/clifford/check_cuda_emitter.py,,2
+20260927_190700,Sun Sep 27 17:07:15 UTC 2026,ok,1,2617,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_borealis_exact.py,,3
+20260927_201539,Sun Sep 27 18:15:53 UTC 2026,ok,1,66,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_dd_rate.py bench/gbs_timing_model.py,,3
+20260927_205524,Sun Sep 27 18:55:38 UTC 2026,ok,1,855,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_emitter.py,,2
+20260928_081620,Mon Sep 28 06:16:34 UTC 2026,ok,1,841,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_borealis_exact.py bench/gbs_pairing_bench.py bench/gbs_timing_model.py,,6
+20260928_092453,Mon Sep 28 07:25:06 UTC 2026,failed,1,3925,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_pairing_bench.py bench/gbs_timing_model.py,,2
+20260928_135612,Mon Sep 28 11:56:25 UTC 2026,failed,1,618,NVIDIA H100 PCIe,2.12.1+cu130,bench/gbs_pairing_bench.py bench/gbs_timing_model.py tests/check_gaussian_dd_gpu.py,,2
+20260928_202924,Mon Sep 28 18:29:37 UTC 2026,failed,1,10,NVIDIA H100 PCIe,2.12.1+cu130,bench/gbs_pairing_bench.py bench/gbs_timing_model.py tests/check_gaussian_dd_gpu.py,,1
+20260928_204415,Mon Sep 28 18:44:29 UTC 2026,failed,1,5433,NVIDIA H100 PCIe,2.12.1+cu130,bench/gbs_pairing_bench.py bench/gbs_timing_model.py tests/check_gaussian_dd_gpu.py,,3
+20260929_072630,Tue Sep 29 05:26:45 UTC 2026,failed,2,1876,NVIDIA H100 PCIe,2.12.1+cu130,bench/gbs_dd_profile.py bench/gbs_timing_model.py tests/check_gaussian_dd_gpu.py,,4
+20260929_103413,Tue Sep 29 08:34:28 UTC 2026,ok,1,163,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_dd_profile.py bench/gbs_timing_model.py,,4
+20260929_172738,Tue Sep 29 15:27:53 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,1
+20260929_210408,Tue Sep 29 19:04:22 UTC 2026,ok,1,3337,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,3
+20260929_231151,Tue Sep 29 21:12:06 UTC 2026,ok,1,3051,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_timing_model.py,,2
+20260930_071754,Wed Sep 30 05:18:08 UTC 2026,failed,2,3759,NVIDIA H100 PCIe,2.14.0+cu130,bench/algorithm_envelope.py tests/clifford/check_algos_gpu.py tests/clifford/test_variants.py,,3
+20260930_082410,Wed Sep 30 06:24:26 UTC 2026,ok,1,13,NVIDIA H100 PCIe,2.14.0+cu130,tests/clifford/check_algos_gpu.py tests/clifford/test_variants.py,,1
+20260930_082501,Wed Sep 30 06:25:16 UTC 2026,failed,6,10481,NVIDIA H100 PCIe,2.14.0+cu130,bench/algorithm_envelope.py bench/algorithm_terms.py bench/cofactor_precision.py bench/find_threshold.py,,21
+20260930_124351,Wed Sep 30 10:44:06 UTC 2026,failed,1,588,NVIDIA H100 PCIe,2.14.0+cu130,bench/algorithm_envelope.py,,2
+20260930_134426,Wed Sep 30 11:44:40 UTC 2026,failed,1,517,NVIDIA H100 PCIe,2.14.0+cu130,bench/algorithm_envelope.py,,2
+20260930_141657,Wed Sep 30 12:17:11 UTC 2026,ok,1,15,NVIDIA H100 PCIe,2.14.0+cu130,bench/algorithm_envelope.py,,2
+20261001_005657,Wed Sep 30 22:57:12 UTC 2026,ok,1,6267,NVIDIA H100 PCIe,2.14.0+cu130,bench/cost_table.py,,2
+20261001_075527,Thu Oct  1 05:55:41 UTC 2026,failed,1,2,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_gaussian_slos.py,,1
+20261001_081051,Thu Oct  1 06:11:05 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_gaussian_slos.py,,1
+20261001_101803,Thu Oct  1 08:18:17 UTC 2026,failed,4,11768,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,7
+20261001_133939,Thu Oct  1 11:39:53 UTC 2026,ok,1,1747,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,2
+20261001_144452,Thu Oct  1 12:45:06 UTC 2026,ok,4,9971,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,8
+20261001_180807,Thu Oct  1 16:08:21 UTC 2026,failed,3,19371,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,7
+20261002_003041,Thu Oct  1 22:30:55 UTC 2026,ok,2,3619,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py tests/clifford/check_cuda_emitter.py,,10
+20261002_073236,Fri Oct  2 05:32:50 UTC 2026,failed,3,22191,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,7
+20261002_200043,Fri Oct  2 18:01:05 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,2
+20261002_203546,Fri Oct  2 18:36:19 UTC 2026,ok,1,6181,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_loop.py,,19
+20261002_222344,Fri Oct  2 20:24:32 UTC 2026,failed,1,18001,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,3
+20261003_032727,Sat Oct  3 01:27:41 UTC 2026,ok,1,13028,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,3
+20261003_071044,Sat Oct  3 05:10:58 UTC 2026,failed,1,6234,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,3
+20261003_090228,Sat Oct  3 07:02:47 UTC 2026,ok,1,5235,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_indist.py,,7
+20261003_103957,Sat Oct  3 08:40:12 UTC 2026,ok,1,4902,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py bench/map_threshold.py,,11
+20261003_120740,Sat Oct  3 10:07:55 UTC 2026,ok,1,426,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_gaussian_slos.py,,2
+20261003_121759,Sat Oct  3 10:18:14 UTC 2026,ok,1,6040,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_indist.py,,11
+20261003_140407,Sat Oct  3 12:04:21 UTC 2026,ok,2,166,NVIDIA H100 PCIe,2.14.0+cu130,,,4
+20261003_140741,Sat Oct  3 12:07:55 UTC 2026,ok,2,10490,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py bench/map_threshold.py tests/clifford/test_sbs_rso.py,,14
+20261003_170411,Sat Oct  3 15:04:25 UTC 2026,ok,1,10419,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py,,9
+20261003_200513,Sat Oct  3 18:05:28 UTC 2026,ok,1,214,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_run_cost.py,,3
+20261003_201532,Sat Oct  3 18:15:46 UTC 2026,ok,1,7654,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py,,8
+20261003_223312,Sat Oct  3 20:33:27 UTC 2026,ok,1,879,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,,3
+20261003_225335,Sat Oct  3 20:53:50 UTC 2026,failed,1,352,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_rect.py tests/clifford/check_cuda_rect.py,,1
+20261003_230355,Sat Oct  3 21:04:09 UTC 2026,failed,5,27913,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/frontier_loss.py bench/map_threshold.py bench/sbs_rso_kernels.py bench/sbs_run_cost.py tests/clifford/test_sbs_rso.py,,33
+20261004_065629,Sun Oct  4 04:56:43 UTC 2026,failed,1,18908,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_rect.py tests/clifford/check_cuda_rect.py,,1
+20261004_121205,Sun Oct  4 10:12:19 UTC 2026,ok,1,83,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_kernels.py tests/clifford/test_sbs_rso.py,,3
+20261004_121405,Sun Oct  4 10:14:19 UTC 2026,ok,1,27150,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,,28
+20261004_220940,Sun Oct  4 20:11:36 UTC 2026,ok,1,943,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py,,4
+20261004_223624,Sun Oct  4 20:37:32 UTC 2026,ok,1,113,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_precision.py bench/sequence_precision.py,,10
+20261004_224743,Sun Oct  4 20:48:10 UTC 2026,ok,1,28465,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_rect.py tests/clifford/check_cuda_rect.py,,2
+20261005_064849,Mon Oct  5 04:49:03 UTC 2026,ok,2,6564,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,,6
+20261005_083900,Mon Oct  5 06:39:14 UTC 2026,ok,1,9109,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,4
+20261005_111300,Mon Oct  5 09:13:14 UTC 2026,failed,1,2189,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_rect.py tests/clifford/check_cuda_rect.py,,1
+20261005_115529,Mon Oct  5 09:55:44 UTC 2026,ok,1,366,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py tests/clifford/test_sbs_rso.py,,2
+20261005_120751,Mon Oct  5 10:08:05 UTC 2026,failed,1,2490,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_rect.py tests/clifford/check_cuda_rect.py,,1
+20261005_125116,Mon Oct  5 10:51:31 UTC 2026,ok,1,263,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py tests/clifford/test_sbs_rso.py,,2
+20261005_130135,Mon Oct  5 11:01:49 UTC 2026,ok,1,217,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py,,3
+20261005_131153,Mon Oct  5 11:12:08 UTC 2026,ok,1,8,NVIDIA H100 PCIe,2.14.0+cu130,bench/theboss_tvd.py,,9
+20261005_132632,Mon Oct  5 11:26:46 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_cuda_rect.py tests/clifford/check_cuda_rect.py,,1
+20261005_165710,Mon Oct  5 14:57:24 UTC 2026,ok,1,326,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py,,2
+20261005_170728,Mon Oct  5 15:07:42 UTC 2026,ok,2,4055,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,,3
+20261005_181800,Mon Oct  5 16:18:15 UTC 2026,ok,1,403,NVIDIA H100 PCIe,2.14.0+cu130,bench/cuda_rect_mu_validate.py bench/sbs_rso_validate.py,,3
+20261005_182819,Mon Oct  5 16:28:33 UTC 2026,ok,1,1280,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,,3
+20261005_192609,Mon Oct  5 17:26:49 UTC 2026,ok,1,300,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py tests/clifford/test_sbs_rso.py,,2
+20261005_193653,Mon Oct  5 17:37:08 UTC 2026,failed,1,1,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py,,1
+20261005_194711,Mon Oct  5 17:47:26 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,,1
+20261005_195203,Mon Oct  5 17:52:18 UTC 2026,ok,1,1709,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py,,2
+20261005_202227,Mon Oct  5 18:22:42 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,,5
+20261005_213240,Mon Oct  5 19:32:56 UTC 2026,ok,1,747,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py tests/clifford/test_cuda_emitter.py tests/clifford/test_cuda_rect.py,,2
+20261005_215026,Mon Oct  5 19:50:41 UTC 2026,ok,1,425,NVIDIA H100 PCIe,2.14.0+cu130,bench/cuda_rect_mu_extend.py,,2
+20261005_220031,Mon Oct  5 20:00:46 UTC 2026,ok,1,534,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/find_threshold.py bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,,13
+20261005_221051,Mon Oct  5 20:11:06 UTC 2026,ok,1,619,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py,,2
+20261005_222151,Mon Oct  5 20:22:07 UTC 2026,ok,1,324,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py,,3
+20261005_223132,Mon Oct  5 20:31:47 UTC 2026,ok,1,1524,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py tests/clifford/check_cuda_emitter.py,,2
+20261005_225737,Mon Oct  5 20:57:53 UTC 2026,ok,1,1032,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py,,2
+20261005_231801,Mon Oct  5 21:18:16 UTC 2026,ok,1,315,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py tests/clifford/test_sbs_rso.py,,2
+20261005_232821,Mon Oct  5 21:28:37 UTC 2026,ok,1,744,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/find_threshold.py bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,,6
+20261005_234844,Mon Oct  5 21:49:00 UTC 2026,ok,1,655,NVIDIA H100 PCIe,2.14.0+cu130,bench/emitter_fock_throughput.py,,2
+20261006_000908,Mon Oct  5 22:09:23 UTC 2026,ok,1,490,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,,9
+20261006_001928,Mon Oct  5 22:19:43 UTC 2026,ok,1,290,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py tests/clifford/test_sbs_rso.py,,2
+20261006_002948,Mon Oct  5 22:30:03 UTC 2026,ok,1,485,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,,9
+20261006_004008,Mon Oct  5 22:40:24 UTC 2026,ok,1,1495,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py bench/frontier_loss.py,,5
+20261006_011034,Mon Oct  5 23:10:49 UTC 2026,ok,1,1,NVIDIA H100 PCIe,2.14.0+cu130,,,2
+20261006_012054,Mon Oct  5 23:21:10 UTC 2026,ok,5,37407,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/find_threshold.py bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,,35
+20261006_114628,Tue Oct  6 09:46:52 UTC 2026,ok,1,1,NVIDIA H100 PCIe,2.14.0+cu130,,False,2
+20261006_115657,Tue Oct  6 09:57:12 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/cuda_rect_mu_extend.py tests/clifford/check_cuda_emitter.py tests/clifford/test_cuda_emitter.py tests/clifford/test_cuda_rect.py,,1
+20261006_115902,Tue Oct  6 09:59:25 UTC 2026,ok,1,218,NVIDIA H100 PCIe,2.14.0+cu130,bench/cuda_rect_mu_extend.py tests/clifford/check_cuda_emitter.py tests/clifford/test_cuda_emitter.py tests/clifford/test_cuda_rect.py,False,2
+20261006_120404,Tue Oct  6 10:04:25 UTC 2026,ok,1,467,NVIDIA H100 PCIe,2.14.0+cu130,bench/cuda_rect_mu_extend.py,False,2
+20261006_122136,Tue Oct  6 10:21:59 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_strata.py tests/clifford/test_cuda_rect.py,False,1
+20261006_125313,Tue Oct  6 10:53:37 UTC 2026,ok,1,692,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_strata.py,False,3
+20261006_131552,Tue Oct  6 11:16:16 UTC 2026,ok,1,127,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_rso_validate.py tests/clifford/test_cuda_rect.py tests/clifford/test_sbs_rso.py,False,2
+20261006_131934,Tue Oct  6 11:19:54 UTC 2026,ok,1,159,NVIDIA H100 PCIe,2.14.0+cu130,bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,False,9
+20261006_132352,Tue Oct  6 11:24:13 UTC 2026,ok,4,31940,NVIDIA H100 PCIe,2.14.0+cu130,bench/coherence_scan.py bench/frontier_loss.py bench/map_threshold.py bench/sbs_run_cost.py,False,32
+20261006_221806,Tue Oct  6 20:18:29 UTC 2026,ok,1,11,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_stratified_cost.py,False,3
+20261006_221903,Tue Oct  6 20:19:24 UTC 2026,ok,1,34,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py bench/find_threshold.py bench/hybrid_frontier.py,False,7
+20261006_222040,Tue Oct  6 20:21:01 UTC 2026,ok,1,8236,NVIDIA H100 PCIe,2.14.0+cu130,bench/sbs_stratified_cost.py,False,3
+20261007_004708,Tue Oct  6 22:47:31 UTC 2026,ok,1,417,NVIDIA H100 PCIe,2.14.0+cu130,bench/rect_precision.py bench/rect_precision_gpu.py,False,4
+20261007_005452,Tue Oct  6 22:55:13 UTC 2026,ok,1,60,NVIDIA H100 PCIe,2.14.0+cu130,bench/rect_precision.py,False,3
+20261007_005628,Tue Oct  6 22:56:49 UTC 2026,ok,1,4318,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py bench/find_threshold.py bench/hybrid_frontier.py,False,8
+20261007_022012,Wed Oct  7 00:20:36 UTC 2026,ok,1,2363,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,False,2
+20261007_030408,Wed Oct  7 01:04:31 UTC 2026,ok,1,10653,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,False,6
+20261007_061124,Wed Oct  7 04:11:48 UTC 2026,ok,1,1677,NVIDIA H100 PCIe,2.14.0+cu130,bench/adaptive_frontier.py,False,2
+20261007_084938,Wed Oct  7 06:50:01 UTC 2026,ok,1,52,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_090041,Wed Oct  7 07:01:04 UTC 2026,ok,1,2678,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_094729,Wed Oct  7 07:47:52 UTC 2026,ok,1,2303,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_103317,Wed Oct  7 08:33:42 UTC 2026,ok,1,6507,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_122313,Wed Oct  7 10:23:37 UTC 2026,ok,1,17163,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,5
+20261007_171048,Wed Oct  7 15:11:12 UTC 2026,ok,1,4748,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_183855,Wed Oct  7 16:39:27 UTC 2026,ok,1,9948,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_213021,Wed Oct  7 19:30:45 UTC 2026,ok,1,3324,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_222618,Wed Oct  7 20:26:41 UTC 2026,ok,1,4884,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261007_235217,Wed Oct  7 21:52:40 UTC 2026,ok,1,6959,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_015826,Wed Oct  7 23:58:49 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,1
+20261008_022730,Thu Oct  8 00:27:51 UTC 2026,ok,1,220,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,3
+20261008_023509,Thu Oct  8 00:35:31 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,1
+20261008_071215,Thu Oct  8 05:12:39 UTC 2026,ok,1,5711,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_085321,Thu Oct  8 06:53:45 UTC 2026,ok,1,6452,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_104426,Thu Oct  8 08:44:50 UTC 2026,ok,1,5179,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_122031,Thu Oct  8 10:20:55 UTC 2026,ok,1,4234,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_133143,Thu Oct  8 11:32:07 UTC 2026,ok,1,20930,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_192343,Thu Oct  8 17:24:07 UTC 2026,ok,1,6043,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261008_210721,Thu Oct  8 19:07:43 UTC 2026,ok,1,8582,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,3
+20261008_233436,Thu Oct  8 21:34:59 UTC 2026,ok,1,51596,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,2
+20261009_135908,Fri Oct  9 11:59:34 UTC 2026,ok,1,192,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,4
+20261009_140252,Fri Oct  9 12:03:14 UTC 2026,failed,1,8,NVIDIA H100 PCIe,2.14.0+cu130,bench/validate_methods.py,False,1
+20261009_140347,Fri Oct  9 12:04:09 UTC 2026,ok,1,209,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,3
+20261009_141132,Fri Oct  9 12:11:54 UTC 2026,ok,1,20249,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,5
+20261009_195328,Fri Oct  9 17:54:18 UTC 2026,ok,1,19,NVIDIA H100 PCIe,2.14.0+cu130,bench/validate_methods.py,False,2
+20261009_195643,Fri Oct  9 17:58:56 UTC 2026,ok,1,31928,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,7
+20261010_045711,Sat Oct 10 02:57:35 UTC 2026,ok,1,18765,NVIDIA H100 PCIe,2.14.0+cu130,bench/map_threshold.py,False,12
+20261010_101720,Sat Oct 10 08:17:44 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/find_threshold.py,False,1
+20261011_102413,Sun Oct 11 08:24:38 UTC 2026,failed,1,0,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261011_102601,Sun Oct 11 08:26:23 UTC 2026,failed,1,13,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261011_102737,Sun Oct 11 08:27:59 UTC 2026,failed,1,13,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261011_102853,Sun Oct 11 08:29:15 UTC 2026,ok,1,87,NVIDIA H100 PCIe,2.14.0+cu130,,False,2
+20261011_103633,Sun Oct 11 08:36:55 UTC 2026,failed,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,1
+20261011_103809,Sun Oct 11 08:38:31 UTC 2026,failed,1,900,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,1
+20261011_105434,Sun Oct 11 08:54:59 UTC 2026,ok,1,464,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_111022,Sun Oct 11 09:10:44 UTC 2026,ok,1,354,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,1
+20261011_123409,Sun Oct 11 10:34:34 UTC 2026,failed,1,138,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_123902,Sun Oct 11 10:39:24 UTC 2026,ok,1,798,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_130055,Sun Oct 11 11:01:19 UTC 2026,ok,1,327,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,1
+20261011_131100,Sun Oct 11 11:11:22 UTC 2026,ok,1,527,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_132646,Sun Oct 11 11:27:10 UTC 2026,ok,1,364,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_133431,Sun Oct 11 11:34:52 UTC 2026,failed,1,25,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,1
+20261011_133536,Sun Oct 11 11:35:58 UTC 2026,failed,1,3044,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_143349,Sun Oct 11 12:34:11 UTC 2026,ok,1,996,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,2
+20261011_145935,Sun Oct 11 12:59:59 UTC 2026,ok,1,11,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261011_150033,Sun Oct 11 13:00:54 UTC 2026,failed,1,193,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_150411,Sun Oct 11 13:04:32 UTC 2026,ok,1,55,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,1
+20261011_150548,Sun Oct 11 13:06:09 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,3
+20261011_150647,Sun Oct 11 13:07:09 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,3
+20261011_150903,Sun Oct 11 13:09:24 UTC 2026,ok,1,730,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbskernels_bench.py,False,2
+20261011_152447,Sun Oct 11 13:25:10 UTC 2026,ok,1,3366,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,4
+20261011_163044,Sun Oct 11 14:31:08 UTC 2026,failed,1,164,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261011_163425,Sun Oct 11 14:34:47 UTC 2026,ok,1,2720,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,3
+20261011_172747,Sun Oct 11 15:28:10 UTC 2026,ok,1,12,NVIDIA H100 PCIe,2.14.0+cu130,bench/cofactor_precision.py,False,3
+20261011_172843,Sun Oct 11 15:29:05 UTC 2026,ok,1,304,NVIDIA H100 PCIe,2.14.0+cu130,bench/energy_series.py,False,2
+20261011_173624,Sun Oct 11 15:36:45 UTC 2026,ok,1,3513,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_kappa_check.py,False,2
+20261011_183719,Sun Oct 11 16:37:43 UTC 2026,ok,1,2272,NVIDIA H100 PCIe,2.14.0+cu130,bench/cost_table.py,False,4
+20261011_192051,Sun Oct 11 17:21:15 UTC 2026,ok,1,11,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_kappa_check.py,False,2
+20261011_192151,Sun Oct 11 17:22:12 UTC 2026,ok,1,3216,NVIDIA H100 PCIe,2.14.0+cu130,bench/cofactor_precision.py,False,3
+20261011_202121,Sun Oct 11 18:22:01 UTC 2026,ok,1,1847,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,4
+20261011_205727,Sun Oct 11 18:57:51 UTC 2026,failed,1,71,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261011_205906,Sun Oct 11 18:59:27 UTC 2026,ok,1,6245,NVIDIA H100 PCIe,2.14.0+cu130,bench/cost_table.py,False,2
+20261011_225012,Sun Oct 11 20:50:35 UTC 2026,ok,1,586,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_kappa_check.py,False,2
+20261011_230230,Sun Oct 11 21:02:51 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,6
+20261012_002751,Sun Oct 11 22:28:15 UTC 2026,failed,1,599,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_004429,Sun Oct 11 22:44:54 UTC 2026,ok,1,2599,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py bench/orca_loop_bench.py,False,3
+20261012_013025,Sun Oct 11 23:30:50 UTC 2026,ok,1,763,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_014614,Sun Oct 11 23:46:38 UTC 2026,failed,1,12,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_014812,Sun Oct 11 23:48:34 UTC 2026,failed,1,82,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_015242,Sun Oct 11 23:53:04 UTC 2026,ok,1,1,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_015418,Sun Oct 11 23:54:40 UTC 2026,ok,1,0,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_015604,Sun Oct 11 23:56:26 UTC 2026,ok,1,0,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_015739,Sun Oct 11 23:58:01 UTC 2026,ok,1,0,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_015905,Sun Oct 11 23:59:27 UTC 2026,ok,1,3,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_020051,Mon Oct 12 00:01:13 UTC 2026,failed,1,44,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_020259,Mon Oct 12 00:03:20 UTC 2026,failed,1,43,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_020516,Mon Oct 12 00:05:38 UTC 2026,failed,1,43,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_020734,Mon Oct 12 00:07:56 UTC 2026,ok,1,153,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_021255,Mon Oct 12 00:13:17 UTC 2026,ok,1,17,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_021431,Mon Oct 12 00:14:54 UTC 2026,ok,1,33,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_021639,Mon Oct 12 00:17:01 UTC 2026,ok,1,40,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_022037,Mon Oct 12 00:20:59 UTC 2026,ok,1,59,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_tn_bench.py,False,3
+20261012_022335,Mon Oct 12 00:23:57 UTC 2026,ok,1,6339,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py bench/orca_tn_bench.py,False,4
+20261012_041437,Mon Oct 12 02:15:02 UTC 2026,ok,1,676,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_tn_bench.py,False,7
+20261012_043025,Mon Oct 12 02:30:47 UTC 2026,ok,1,3311,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py bench/orca_tn_bench.py,False,18
+20261012_052852,Mon Oct 12 03:29:17 UTC 2026,ok,1,43,NVIDIA H100 PCIe,2.14.0+cu130,bench/bench_tn_compare.py,False,10
+20261012_072530,Mon Oct 12 05:25:55 UTC 2026,failed,1,1700,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,2
+20261012_075606,Mon Oct 12 05:56:28 UTC 2026,ok,1,0,NVIDIA H100 PCIe,2.14.0+cu130,,False,1
+20261012_075702,Mon Oct 12 05:57:24 UTC 2026,ok,1,536,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_sector_speed.py tests/timeloop/test_hybrid.py,False,2
+20261012_081240,Mon Oct 12 06:13:04 UTC 2026,ok,1,347,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_sector_speed.py tests/timeloop/test_hybrid.py,False,4
+20261012_084250,Mon Oct 12 06:43:15 UTC 2026,ok,1,3484,NVIDIA H100 PCIe,2.14.0+cu130,bench/gbs_loop.py bench/hybrid_frontier.py,False,6
+20261012_095003,Mon Oct 12 07:50:31 UTC 2026,incomplete,1,0,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,False,2
+20261012_095253,Mon Oct 12 07:53:14 UTC 2026,ok,1,8368,NVIDIA H100 PCIe,2.14.0+cu130,bench/orca_loop_bench.py,False,5
+20261016_021007,Fri Oct 16 00:10:35 UTC 2026,ok,6,1439,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py tests/timeloop/test_hybrid.py,False,11
+20261016_023559,Fri Oct 16 00:36:24 UTC 2026,ok,1,63,NVIDIA H100 PCIe,2.14.0+cu130,bench/table_lookup_rate.py,False,2
+20261016_023739,Fri Oct 16 00:38:00 UTC 2026,failed,21,35615,NVIDIA H100 PCIe,2.14.0+cu130,bench/hybrid_frontier.py,False,41

@@ -1,0 +1,4 @@
+engine,ratio,eta,x,n,m,samples_per_s,ms_per_sample,seconds,shots,phi,sites,layout,eta_post,r,schmidt,impl,estimator,raw_rate,est_err,shot_cap,censored,s_1e4,ext_1e4,s_1e6,ext_1e6,s_1e8,ext_1e8,bracket_censored
+emitter,2.0,0.7,0.974679,40,80,3.101688050271057,322.4050851640641,182.7,256,,,,,,,,,,,,,,,,,,,0
+emitter,2.0,0.7,0.974679,41,82,1.5702597662404927,636.8373064758543,1641.1,2048,,,,,,,,,,,,,,,,,,,0
+emitter,2.0,0.7,0.974679,42,84,0.7906426516650307,1264.793896324818,2946.9,2048,,,,,,,,,,,,,,,,,,,0

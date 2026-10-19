@@ -1,0 +1,3 @@
+circuit,n,m,param,target,level,compile_s,law_variant,tvd,floor,law_ok,build_ms,per_sample_ms,s_per_sample_at_max_shots,times,note
+loop,3,7,1,tensornet,3,0.0,U,0.010356751085888937,0.025854414729132053,True,598.805549,598.805549,0.598805549,1:0.5988,
+loop,3,7,1,tensornet-mps,3,0.0,U,0.0073806339288630856,0.025854414729132053,True,603.4690879999999,603.4690879999999,0.603469088,1:0.6035,

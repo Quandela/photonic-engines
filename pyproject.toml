@@ -1,0 +1,144 @@
+[build-system]
+requires = ["setuptools>=77"]                 # SPDX `license` string
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "photonic-engines"
+version = "0.0.1"
+description = "Exact GPU simulation and sampling engines for linear-optical quantum computing"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    {name = "Jean Senellart"},
+    {name = "Benjamin Stott"},
+    {name = "Pierre-Emmanuel Emeriau"},
+    {name = "Stephen Wein"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = ["torch>=2.4", "numpy"]
+
+[project.urls]
+Homepage = "https://github.com/Quandela/photonic-engines"
+Repository = "https://github.com/Quandela/photonic-engines"
+
+[project.optional-dependencies]
+cuda = ["triton>=3.0", "cupy-cuda13x"]
+perceval = ["perceval-quandela"]
+mpi = ["mpi4py", "cffi"]          # + an MPI installation (mpicc, mpirun); `pip install mpich` works as a fallback
+dev = ["pytest", "pytest-cov", "ruff>=0.14"]
+
+[tool.setuptools.packages.find]
+include = ["photonic_engines*"]
+
+[tool.setuptools.package-data]
+photonic_engines = ["slos/csrc/*.c"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]                # `from tests.helpers import ...` also under the bare `pytest` entry point
+python_files = ["test_*.py"]
+markers = [
+    "gpu: needs a CUDA device (skipped otherwise)",
+    "slow: > 30 s on CPU; run with --runslow or PE_RUN_SLOW=1",
+]
+
+# ---------------------------------------------------------------------------------------------
+# Ruff.  Lint only -- the formatter is deliberately NOT applied to this code base: the compact,
+# column-aligned style of the numerical kernels is intentional and carries information.  See
+# docs/CONTRIBUTING.md ("Style").
+# ---------------------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 140
+target-version = "py310"
+extend-exclude = ["venv", "experiments", "results", "_to_delete", "papers"]
+
+[tool.ruff.lint]
+select = [
+    "F",      # pyflakes -- real bugs: undefined names, unused imports/variables
+    "E", "W", # pycodestyle
+    "I",      # import sorting
+    "UP",     # pyupgrade -- keep the syntax at the declared target-version
+    "B",      # flake8-bugbear
+    "C4",     # comprehensions
+    "SIM",    # simplifiable constructs
+    "RET",    # return-statement hygiene
+    "PIE",    # misc lints
+    "PERF",   # obvious performance anti-patterns
+    "NPY",    # numpy legacy API
+    "LOG",    # logging misuse
+    "PT",     # pytest conventions
+    "FLY",    # static string joins
+    "EXE",    # shebang / exec-bit consistency
+    "RUF",    # ruff-specific
+    "D",      # pydocstyle -- narrowed to the public API below, see per-file-ignores
+]
+ignore = [
+    # Style choices of this code base, deliberately kept.
+    "E701", "E702", "E703",  # `a = 1; b = 2` one-liners in the kernels
+    "E741",                  # `l`, `I`, `O`: standard names in optics/linear algebra
+    "E731",                  # short lambdas assigned to a name
+    "RUF001", "RUF002", "RUF003",  # greek letters and math symbols in strings/comments/docstrings
+    # Docstring style: content is required (D1xx), layout is not policed.
+    "D203", "D205", "D212", "D213", "D400", "D401", "D415", "D404",
+    "D301",                  # docstrings already escape their backslashes
+    "D105", "D107",          # magic methods and __init__ document at the class level
+    # Noisy or actively unhelpful here.
+    "RET504",                # named result before `return` aids debugging of long kernels
+    "SIM108",                # ternary is not always clearer than if/else
+    "RUF059",                # unused unpacked variable: shape unpacking documents the tensor
+    "PT011",                 # pytest.raises(ValueError) without a match= is fine
+    "PT018",                 # composite asserts read better for numerical tolerances
+    "B905",                  # zip(strict=) -- would need auditing every call site first
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Docstrings are required in the library only.
+"tests/**"     = ["D1", "D2", "D4", "E402", "PT006", "PT012", "SIM115", "B023"]
+"release/public/tests/**" = ["D1", "D2", "D4"]   # the public overlay's tests (they land in tests/ on export)
+"bench/**"     = ["D1", "D2", "D4", "E402", "B023", "SIM115", "PERF", "RUF015"]
+"examples/**"  = ["D1", "D2", "D4", "E402"]
+"scripts/**"   = ["D1", "D2", "D4", "E402"]
+# Re-exports: the public surface of each sub-package.
+"photonic_engines/**/__init__.py" = ["F401"]
+# Embedded CUDA C source: the kernel text is kept as written for the nvcc line numbers.
+"photonic_engines/clifford/cuda_cofactors.py" = ["E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["photonic_engines"]
+
+[tool.coverage.run]
+source = ["photonic_engines"]
+branch = false
+omit = [
+    # Needs a CUDA device (cupy / NVRTC); exercised by the `gpu` job, not by the CPU pipeline.
+    "photonic_engines/clifford/cuda_cofactors.py",
+    # (clifford/cuda_emitter.py is NOT omitted: its kernel code and host planning run on the CPU
+    # through the C++ emulation of tests/clifford/test_cuda_emitter.py; only the cupy launch path
+    # is GPU-only.)
+    "photonic_engines/clifford/exq_sampler.py",
+    "photonic_engines/clifford/single.py",
+    # Needs an MPI runtime; exercised by tests/slos/check_distributed.py.
+    "photonic_engines/slos/_mpi_worker.py",
+    "photonic_engines/slos/distributed.py",
+]
+
+[tool.coverage.report]
+# The CPU pipeline sits at ~88 %; the floor is the regression gate, not a target.
+fail_under = 85
+skip_covered = false
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod",
+    "if not torch.cuda.is_available",
+]

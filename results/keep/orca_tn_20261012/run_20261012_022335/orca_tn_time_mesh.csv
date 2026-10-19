@@ -1,0 +1,5 @@
+circuit,n,m,param,target,level,compile_s,law_variant,tvd,floor,law_ok,build_ms,per_sample_ms,s_per_sample_at_max_shots,times,note
+mesh,4,8,8,tensornet,5,0.0,,,,,51.089007586058614,0.0003224139413941391,5.4313146999999995e-06,1:0.05109 10000:0.05431,
+mesh,4,8,8,tensornet-mps,5,0.0,,,,,63.199549999999995,0.0,5.8609565000000005e-06,1:0.0632 10000:0.05861,
+mesh,6,12,12,tensornet,7,0.0,,,,,,,,,timeout after 900 s
+mesh,6,12,12,tensornet-mps,7,0.0,,,,,1846.6304185636563,0.4491784363436344,0.0006338414782,1:1.847 10000:6.338,

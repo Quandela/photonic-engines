@@ -1,0 +1,2 @@
+input,ratio,L,ladder,N,T,chi,D,shots,samples_per_s,ms_per_sample,loop_eta,sampler,sector_max_amplitudes,sector_max_mean_n,table_seconds,spacing,rate_basis
+fock,2.0,12,12,100000,200000,1,16073663559805448961999618571737630165560180820186942501,256,1.8877731639381756,529.7246613644254,,sector,1,25.0,0.0,1,batches >= 4 pooled

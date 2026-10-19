@@ -1,0 +1,7 @@
+input,ratio,L,ladder,N,T,chi,D,shots,samples_per_s,ms_per_sample,loop_eta,sampler,sector_max_amplitudes,sector_max_mean_n,table_seconds,spacing,rate_basis
+emitter,2.0,1,1,300,600,2,4590551,256,115.5124225235329,8.657077551951383,,sector,42,2.0,0.08,1,batches >= 4 pooled
+emitter,2.0,1,1,480,960,2,18663281,256,72.39398364530645,13.813302565300031,,sector,42,2.0,0.11,1,batches >= 4 pooled
+emitter,2.0,1,1,768,1536,2,76088705,256,45.37271971717004,22.039675078626107,,sector,42,3.0,0.18,1,batches >= 4 pooled
+emitter,2.0,1,1,1228,2456,2,310144295,256,28.301205128435107,35.334184373486934,,sector,42,3.0,0.28,1,batches >= 4 pooled
+emitter,2.0,1,1,1964,3928,2,1266482455,256,17.672456371905366,56.58522952076664,,sector,56,3.0,0.44,1,batches >= 4 pooled
+emitter,2.0,1,1,3142,6284,2,5179601140,256,11.035111821209135,90.61983387227954,,sector,56,3.0,0.7,1,batches >= 4 pooled

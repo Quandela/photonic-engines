@@ -1,0 +1,50 @@
+rectangular cofactors, cuda vs torch (max |dP| / max |P|), S = 4:
+  N=16 q= 8 tier 16 TPL=1: 1.63e-15 ok   torch    0.15 s  cuda   47.37 s  x0.0
+  N=24 q=16 tier 24 TPL=2: 1.47e-13 ok   torch    0.01 s  cuda    0.00 s  x3.6
+  N=32 q=20 tier 32 TPL=1: 9.25e-13 ok   torch    0.17 s  cuda    0.01 s  x18.4
+  N=40 q=24 tier 40 TPL=1: 3.50e-12 ok   torch    4.10 s  cuda    0.31 s  x13.0
+  N=44 q=30 tier 48 TPL=2: 2.23e-10 ok   torch  315.09 s  cuda   18.01 s  x17.5
+  N=72 q=12 tier 72 TPL=8: 2.92e-15 ok   torch    0.00 s  cuda    0.00 s  x0.8
+  N=90 q=10 tier 96 TPL=8: 4.26e-15 ok   torch    0.00 s  cuda    0.00 s  x0.7
+end-to-end draws identical (n = 12, 256 shots): True
+one chain step at the frontier sizes, 64 streams (seconds, torch vs cuda):
+  n=42 k=21 step j=21 (N=42, q=20): torch     4.49 s  cuda     0.39 s  x 11.5  err 1.6e-13
+  n=42 k=28 step j=28 (N=42, q=27): torch   576.44 s  cuda    38.86 s  x 14.8  err 2.5e-11
+  n=42 k=33 step j=33 (N=42, q=32): torch  (skipped, q > 27)  cuda   781.53 s
+  n=48 k=24 step j=24 (N=48, q=23): torch    45.74 s  cuda     2.91 s  x 15.7  err 2.1e-12
+step payloads at the Fock limit, n = 34, last step (N = 34, q = 33 - s0), 64 streams:
+  s0=0 q=33: lambda   223.65 s  mu   123.03 s  Fock kernel     8.68 s  mu err 1.4e-12  lambda err 1.8e-06  auto -> fock
+  s0=1 q=32: lambda   159.55 s  mu   128.20 s  x 1.24  mu (other TPL)   128.02 s  mu two orders 2.9e-13  mu vs lambda 2.1e-07  auto -> mu
+  s0=2 q=31: lambda    74.61 s  mu    66.73 s  x 1.12  mu (other TPL)    66.20 s  mu two orders 2.8e-13  mu vs lambda 4.7e-08  auto -> mu
+  s0=4 q=29: lambda    30.32 s  mu    37.65 s  x 0.81  mu vs lambda 1.3e-09  auto -> mu
+  s0=6 q=27: lambda    13.14 s  mu    16.16 s  x 0.81  mu vs lambda 1.6e-10  auto -> mu
+point n=34 k=34 j=34: N=34 q=33 (tier 40) streams=64 work units=1.421e+12
+  torch rect_cofactors            : skipped (--no-torch)
+  TPL=1 maxreg=   -:  105654.5 ms    13.45 G units/s  x   nan vs torch  err nan   (first call incl. compile 152.7 s)
+  TPL=2 maxreg=   -:  114973.1 ms    12.36 G units/s  x   nan vs torch  err nan   (first call incl. compile 154.8 s)
+  TPL=4 maxreg=   -:   80618.0 ms    17.63 G units/s  x   nan vs torch  err nan   (first call incl. compile 118.4 s)
+  TPL=8 maxreg=   -:  112262.7 ms    12.66 G units/s  x   nan vs torch  err nan   (first call incl. compile 149.2 s)
+  best: TPL=4 maxreg=default (80618.0 ms, xnan vs torch)
+point n=34 k=32 j=32: N=34 q=31 (tier 40) streams=64 work units=4.830e+11
+  torch rect_cofactors            : skipped (--no-torch)
+  TPL=1 maxreg=   -:   87482.5 ms     5.52 G units/s  x   nan vs torch  err nan   (first call incl. compile 87.6 s)
+  TPL=2 maxreg=   -:   94370.4 ms     5.12 G units/s  x   nan vs torch  err nan   (first call incl. compile 94.3 s)
+  TPL=4 maxreg=   -:   85765.7 ms     5.63 G units/s  x   nan vs torch  err nan   (first call incl. compile 85.8 s)
+  TPL=8 maxreg=   -:  132554.2 ms     3.64 G units/s  x   nan vs torch  err nan   (first call incl. compile 132.7 s)
+  best: TPL=4 maxreg=default (85765.7 ms, xnan vs torch)
+point n=34 k=30 j=30: N=34 q=29 (tier 40) streams=64 work units=1.440e+11
+  torch rect_cofactors            : skipped (--no-torch)
+  TPL=1 maxreg=   -:   39761.6 ms     3.62 G units/s  x   nan vs torch  err nan   (first call incl. compile 39.6 s)
+  TPL=2 maxreg=   -:   41920.3 ms     3.43 G units/s  x   nan vs torch  err nan   (first call incl. compile 41.9 s)
+  TPL=4 maxreg=   -:   50801.7 ms     2.83 G units/s  x   nan vs torch  err nan   (first call incl. compile 50.7 s)
+  TPL=8 maxreg=   -:   77687.0 ms     1.85 G units/s  x   nan vs torch  err nan   (first call incl. compile 77.7 s)
+  best: TPL=1 maxreg=default (39761.6 ms, xnan vs torch)
+point n=34 k=28 j=28: N=34 q=27 (tier 40) streams=64 work units=4.201e+10
+  torch rect_cofactors            : skipped (--no-torch)
+  TPL=1 maxreg=   -:   16859.5 ms     2.49 G units/s  x   nan vs torch  err nan   (first call incl. compile 16.9 s)
+  TPL=2 maxreg=   -:   19121.0 ms     2.20 G units/s  x   nan vs torch  err nan   (first call incl. compile 19.1 s)
+  TPL=4 maxreg=   -:   23743.9 ms     1.77 G units/s  x   nan vs torch  err nan   (first call incl. compile 23.7 s)
+  TPL=8 maxreg=   -:   37094.2 ms     1.13 G units/s  x   nan vs torch  err nan   (first call incl. compile 37.3 s)
+  best: TPL=1 maxreg=default (16859.5 ms, xnan vs torch)
+point n=42 k=42 j=42: N=42 q=41 (tier 48) streams=64 work units=2.990e+14
+  torch rect_cofactors            : skipped (--no-torch)

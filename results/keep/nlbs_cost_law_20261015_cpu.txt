@@ -1,0 +1,22 @@
+       point   B  Fock  NLBS  dn*  rho(c)  kappa
+       m/n=1   2  42.4  40.1  2.3  1.6875   0.33
+     m/n=1.5   2  40.0  37.4  2.6  1.7626   0.59
+       m/n=2   2  38.5  36.0  2.5  1.8084   0.60
+       m/n=3   2  36.8  34.5  2.3  1.8617   0.54
+       m/n=4   2  36.2  33.8  2.4  1.8917   0.65
+       m/n=6   2  35.3  33.0  2.3  1.9245   0.63
+       m/n=8   2  34.9  32.5  2.4  1.9420   0.73
+      m/n=12   2  34.4  32.1  2.3  1.9604   0.68
+   phi=pi/16  16  38.5  30.2  8.3  1.8084   0.47
+    phi=pi/8   8  38.5  32.2  6.3  1.8084   0.53
+    phi=pi/4   4  38.5  34.2  4.3  1.8084   0.55
+  phi=3*pi/8   8  38.5  32.2  6.3  1.8084   0.53
+  phi=5*pi/8   8  38.5  32.2  6.3  1.8084   0.53
+  phi=3*pi/4   4  38.5  34.3  4.2  1.8084   0.50
+
+kappa = 0.548 (least squares in n*, 13 points, m/n = 1 excluded; rms residual 0.12 source) +- 0.075 (sd of the per-point kappa); all 14 points: mean 0.561
+acceptance B =   1: 1.000 - 1.000 over 6 points (1/|c|_1^2 = 1.0000)
+acceptance B =   2: 0.430 - 0.591 over 39 points (1/|c|_1^2 = 0.5000)
+acceptance B =   4: 0.207 - 0.322 over 12 points (1/|c|_1^2 = 0.2500)
+acceptance B =   8: 0.096 - 0.148 over 9 points (1/|c|_1^2 = 0.1250)
+acceptance B =  16: 0.054 - 0.077 over 9 points (1/|c|_1^2 = 0.0620)

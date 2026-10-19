@@ -1,0 +1,1 @@
+n = 14, m = 28, alpha = 0.7854, 3000 shots, seed 1: mean occupation per mode, max |z| vs coherent 1.80, vs incoherent 22.08

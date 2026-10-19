@@ -1,0 +1,9 @@
+assumed I = 0.95, T = 3.0 K, l = 12, eps delta = 0.001, eta_e = 72.733 GFLOPS/W, draws = 10000, seed = 1
+gpu: 280 W / R(M), R from results/keep/energy_r2_20261011_h100.csv (wh_per_sample, measured board energy), m/n = 2: 12: 3.85e+06/s, 15: 1.07e+06/s, 18: 1.94e+05/s, 20: 5.8e+04/s, 24: 5.71e+03/s, 30: 135/s, 34: 12.7/s, 38: 1.07/s
+
+averaging   classical  crossings (M, between device n, direction of E^C - E^Q)
+    fixed         gpu  none: E^C > E^Q everywhere
+   device         gpu  none: E^C > E^Q everywhere
+      n-l         gpu  none: E^C > E^Q everywhere
+
+Soret et al.: M_e = 17 (fixed l = 12, appendix VI.3), M_e* = 15 (averaged, Fig. 2a); E^C = E^Q = 1.0e-8 Wh at n = 24, m = 51, eta = 60 %

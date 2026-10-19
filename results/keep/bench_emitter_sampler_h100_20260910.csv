@@ -1,0 +1,5 @@
+n,m,shots,emitter_ms_per_sample,R_mean,R_max_step,fock_ms_per_sample,fock_backend,ratio
+8,16,512,0.91,4.95,9.2,0.0003,cuda,3035.4
+10,20,512,3.219,8.12,17.6,0.0006,cuda,5056.0
+12,24,512,7.472,13.28,31.2,0.0007,cuda,10401.1
+14,28,512,13.47,22.27,54.7,0.0014,cuda,9848.5

@@ -1,0 +1,46 @@
+# GPU environment of the measurements: one NVIDIA H100 PCIe, driver 580.126.20, CUDA 13.0, Python 3.12.3.
+# Source: pip freeze on the GPU host, run 20261006_011034 (run_estimator.sh job 3), filtered by F to what photonic-engines
+# imports (OS, cloud-init and unrelated host packages dropped). torch is the cu130 build:
+#   pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cu130
+#   pip install -r environment-gpu.txt && pip install -e ".[cuda,perceval,dev]"
+torch==2.14.0
+triton==3.8.0
+numpy==2.5.2
+scipy==1.18.1
+cupy-cuda13x==13.6.0
+fastrlock==0.8.3
+cuda-bindings==13.3.1
+cuda-pathfinder==1.8.1
+nvidia-cublas==13.1.1.3
+nvidia-cuda-cupti==13.0.85
+nvidia-cuda-nvrtc==13.0.88
+nvidia-cuda-runtime==13.0.96
+nvidia-cudnn-cu13==9.24.0.43
+nvidia-cufft==12.0.0.61
+nvidia-cufile==1.15.1.6
+nvidia-curand==10.4.0.35
+nvidia-cusolver==12.0.4.66
+nvidia-cusparse==12.6.3.3
+nvidia-cusparselt-cu13==0.8.1
+nvidia-nccl-cu13==2.30.7
+nvidia-nvjitlink==13.0.88
+nvidia-nvshmem-cu13==3.4.5
+nvidia-nvtx==13.0.85
+filelock==3.32.5
+fsspec==2026.7.0
+Jinja2==3.1.2
+MarkupSafe==2.1.5
+mpmath==1.3.0
+networkx==3.6.1
+sympy==1.14.0
+typing_extensions==4.10.0
+setuptools==81.0.0
+perceval-quandela==1.2.4
+exqalibur==1.4.1
+matplotlib==3.11.1
+pytest==9.1.1
+pluggy==1.6.0
+iniconfig==2.3.0
+packaging==24.0
+# External comparison benchmarks only (bench/cudaq_*.py, E): not needed by the package.
+# cudaq==0.16.0.post1  cuda-quantum-cu13==0.16.0.post1  cutensornet-cu13==2.13.0  custatevec-cu13==1.14.0

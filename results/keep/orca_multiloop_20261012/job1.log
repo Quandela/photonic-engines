@@ -1,0 +1,100 @@
+orca_loop_bench check: L=[3] ladder=[1, 2] N=[2, 3, 4] seed=0 cpus 24
+  orca worker: numba compilations during samples [(0, 18)]
+  orca worker: sample key lengths {1: 9209, 2: 52, 3: 9403, 4: 5} (m = 4)
+  orca worker L=3 ladder=[1, 2] N=2 m=4 gates=5: 18669 samples in 14.15 s (first 1.85 s, median 0.000706 s, max 1.85 s); numpy 2.5.4
+check L=3 N=2 m=4 shots=18669: TVD theirs-exact 0.0065 (z +1.4; U, other orientation 0.8847), ours-exact 0.0023 (z -0.7), floor 0.0037 +- 0.0020 (40 exact draws); 10 patterns, sum p 1.000000000000; their 0.66 ms/sample
+  key length: samples / on impossible patterns: 1: 9209 / 0, 2: 52 / 0, 3: 9403 / 0, 4: 5 / 0
+  orca worker: numba compilations during samples [(0, 22), (244, 2)]
+  orca worker: sample key lengths {1: 14, 2: 610, 3: 185, 4: 1079, 5: 14833, 6: 538} (m = 6)
+  orca worker L=3 ladder=[1, 2] N=3 m=6 gates=9: 17259 samples in 31.77 s (first 1.98 s, median 0.00156 s, max 1.98 s); numpy 2.5.4
+check L=3 N=3 m=6 shots=17259: TVD theirs-exact 0.0095 (z -0.0; U, other orientation 0.9547), ours-exact 0.0080 (z -0.8), floor 0.0095 +- 0.0019 (40 exact draws); 56 patterns, sum p 1.000000000000; their 1.73 ms/sample
+  key length: samples / on impossible patterns: 1: 14 / 0, 2: 610 / 0, 3: 185 / 0, 4: 1079 / 0, 5: 14833 / 0, 6: 538 / 0
+  orca worker: numba compilations during samples [(0, 28), (163, 2)]
+  orca worker: sample key lengths {1: 67, 2: 1589, 3: 1262, 4: 849, 5: 592, 6: 3417, 7: 25, 8: 7838} (m = 8)
+  orca worker L=3 ladder=[1, 2] N=4 m=8 gates=13: 15639 samples in 55.36 s (first 2.62 s, median 0.00342 s, max 2.62 s); numpy 2.5.4
+check L=3 N=4 m=8 shots=15639: TVD theirs-exact 0.0252 (z -0.7; U, other orientation 0.8934), ours-exact 0.0281 (z +0.6), floor 0.0268 +- 0.0022 (40 exact draws); 330 patterns, sum p 1.000000000000; their 3.37 ms/sample
+  key length: samples / on impossible patterns: 1: 67 / 0, 2: 1589 / 0, 3: 1262 / 0, 4: 849 / 0, 5: 592 / 0, 6: 3417 / 0, 7: 25 / 0, 8: 7838 / 0
+orca_loop_bench check: L=[13] ladder=[1, 3, 9] N=[5, 6] seed=0 cpus 24
+  orca worker: numba compilations during samples [(0, 34), (2, 1)]
+  orca worker: sample key lengths {2: 2, 3: 9, 4: 26, 5: 96, 6: 15, 7: 50, 8: 16, 9: 408, 10: 684} (m = 10)
+  orca worker L=13 ladder=[1, 3, 9] N=5 m=10 gates=17: 1306 samples in 278.73 s (first 3.38 s, median 0.213 s, max 3.38 s); numpy 2.5.4
+check L=13 N=5 m=10 shots=1306: TVD theirs-exact 0.1761 (z -0.1; U, other orientation 0.9535), ours-exact 0.1689 (z -0.8), floor 0.1766 +- 0.0093 (40 exact draws); 2002 patterns, sum p 1.000000000000; their 211.00 ms/sample
+  key length: samples / on impossible patterns: 2: 2 / 0, 3: 9 / 0, 4: 26 / 0, 5: 96 / 0, 6: 15 / 0, 7: 50 / 0, 8: 16 / 0, 9: 408 / 0, 10: 684 / 0
+  orca worker: numba compilations during samples [(0, 39)]
+  orca worker: sample key lengths {6: 3, 7: 27, 8: 2, 9: 2, 10: 8, 11: 80, 12: 113} (m = 12)
+  orca worker L=13 ladder=[1, 3, 9] N=6 m=12 gates=23: 235 samples in 297.52 s (first 4.76 s, median 1.47 s, max 4.76 s); numpy 2.5.4
+check L=13 N=6 m=12 shots=235: TVD theirs-exact 0.5109 (z -1.0; U, other orientation 0.9876), ours-exact 0.5296 (z +0.1), floor 0.5279 +- 0.0173 (40 exact draws); 12376 patterns, sum p 1.000000000000; their 1251.12 ms/sample
+  key length: samples / on impossible patterns: 6: 3 / 0, 7: 27 / 0, 8: 2 / 0, 9: 2 / 0, 10: 8 / 0, 11: 80 / 0, 12: 113 / 0
+orca_loop_bench diag: L=[31] ladder=[1, 5, 25] N=[4, 6, 8, 10, 13, 16, 20] seed=0 cpus 24
+  orca worker: numba compilations during samples [(0, 28)]
+  orca worker: sample key lengths {3: 2, 4: 12, 5: 2, 6: 46, 7: 48, 8: 18} (m = 8)
+  orca worker L=31 ladder=[1, 5, 25] N=4 m=8 gates=10: 128 samples in 4.82 s (first 2.63 s, median 0.0183 s, max 2.63 s); numpy 2.5.4
+diag L=31 N=4 pass=0 shots=64 mean_s=0.05876 mean_from3_s=0.01786 median_s=0.01838 max_s=2.635 n_slow=1 n_slow_compiling=1 n_compiling=1 mean_noncompiling_s=0.01787 steady_s=0.01787 n_steady=63 onetime_s=2.617 censored=0  [08:18:43]
+diag L=31 N=4 pass=1 shots=64 mean_s=0.01658 mean_from3_s=0.01659 median_s=0.01808 max_s=0.02035 n_slow=0 n_slow_compiling=0 n_compiling=0 mean_noncompiling_s=0.01658 steady_s=0.01654 n_steady=63 onetime_s=0.002058 censored=0  [08:18:43]
+  orca worker: numba compilations during samples [(0, 38), (40, 2)]
+  orca worker: sample key lengths {4: 2, 5: 1, 6: 3, 7: 1, 8: 1, 9: 34, 10: 53, 11: 26, 12: 7} (m = 12)
+  orca worker L=31 ladder=[1, 5, 25] N=6 m=12 gates=18: 128 samples in 15.46 s (first 3.73 s, median 0.0856 s, max 3.73 s); numpy 2.5.4
+diag L=31 N=6 pass=0 shots=64 mean_s=0.1482 mean_from3_s=0.09064 median_s=0.08517 max_s=3.73 n_slow=1 n_slow_compiling=1 n_compiling=2 mean_noncompiling_s=0.08816 steady_s=0.08816 n_steady=62 onetime_s=3.842 censored=0  [08:19:01]
+diag L=31 N=6 pass=1 shots=64 mean_s=0.09333 mean_from3_s=0.09299 median_s=0.08691 max_s=0.2465 n_slow=0 n_slow_compiling=0 n_compiling=0 mean_noncompiling_s=0.09333 steady_s=0.09327 n_steady=63 onetime_s=0.003556 censored=0  [08:19:01]
+  orca worker: numba compilations during samples [(0, 32), (3, 17)]
+  orca worker: sample key lengths {4: 3, 5: 2, 6: 2, 7: 2, 8: 4, 10: 7, 12: 21, 13: 18, 14: 37, 15: 1, 16: 31} (m = 16)
+  orca worker L=31 ladder=[1, 5, 25] N=8 m=16 gates=26: 128 samples in 43.36 s (first 3.22 s, median 0.222 s, max 3.22 s); numpy 2.5.4
+diag L=31 N=8 pass=0 shots=64 mean_s=0.4221 mean_from3_s=0.3828 median_s=0.264 max_s=3.218 n_slow=2 n_slow_compiling=2 n_compiling=2 mean_noncompiling_s=0.3502 steady_s=0.3502 n_steady=62 onetime_s=4.6 censored=0  [08:19:47]
+diag L=31 N=8 pass=1 shots=64 mean_s=0.2555 mean_from3_s=0.2539 median_s=0.1946 max_s=0.7451 n_slow=0 n_slow_compiling=0 n_compiling=0 mean_noncompiling_s=0.2555 steady_s=0.2513 n_steady=63 onetime_s=0.2647 censored=0  [08:19:47]
+  orca worker: numba compilations during samples [(0, 55)]
+  orca worker: sample key lengths {5: 2, 7: 1, 9: 3, 10: 5, 12: 3, 14: 2, 15: 1, 17: 22, 18: 42, 19: 17, 20: 30} (m = 20)
+  orca worker L=31 ladder=[1, 5, 25] N=10 m=20 gates=34: 128 samples in 67.68 s (first 6.3 s, median 0.393 s, max 6.3 s); numpy 2.5.4
+diag L=31 N=10 pass=0 shots=64 mean_s=0.5544 mean_from3_s=0.467 median_s=0.4157 max_s=6.3 n_slow=4 n_slow_compiling=1 n_compiling=1 mean_noncompiling_s=0.4632 steady_s=0.4632 n_steady=63 onetime_s=5.837 censored=0  [08:20:58]
+diag L=31 N=10 pass=1 shots=64 mean_s=0.5032 mean_from3_s=0.4909 median_s=0.3892 max_s=1.775 n_slow=7 n_slow_compiling=0 n_compiling=0 mean_noncompiling_s=0.5032 steady_s=0.4973 n_steady=63 onetime_s=0.3792 censored=0  [08:20:58]
+  L=31 N=13: sample ? killed (> 2700 s)
+=== diag L=31 N=13: no sample came back
+orca_loop_bench ours: L=[31] ladder=[1, 5, 25] N=[4, 6, 8] seed=0 cpus 24
+ours sector L=31 N=4 T=8 batch 1024: t_S = 0.067 s for S = 1024 (6.543e-05 s/sample, tables excluded)  [09:38:38]
+ours sector L=31 N=4 T=8 batch 64: t_S = 0.3809 s for S = 1024 (0.000372 s/sample, tables excluded)  [09:38:38]
+[W1012 09:38:53.003985716 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:38:53.194723722 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:38:54.985423155 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:38:54.141825297 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:38:54.304321303 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:38:54.313416714 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+ours sector L=31 N=6 batch 1024: out of memory
+ours sector L=31 N=6 T=12 batch 64: t_S = 10.32 s for S = 1024 (0.01008 s/sample, tables excluded)  [09:39:05]
+[W1012 09:46:48.785354173 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:46:49.957349154 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:46:49.967423054 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+ours sector L=31 N=8 batch 1024: out of memory
+[W1012 09:46:49.462034011 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:46:49.576595449 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:46:49.752695438 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:46:50.533392356 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+[W1012 09:46:50.637134424 CUDACachingAllocator.cpp:528] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 12779520, total: 85017493504).
+ours sector L=31 N=8 batch 64: out of memory
+=== ours sector L=31: 1 sample/s crossing N* = nan (nan = not bracketed)
+orca_loop_bench diag: L=[3] ladder=[1, 2] N=[64, 128, 256] seed=0 cpus 24
+  orca worker: numba compilations during samples [(0, 30), (1, 58), (2, 2), (3, 2), (53, 2), (124, 8)]
+  orca worker: sample key lengths {62: 31, 63: 16, 64: 13, 65: 5, 66: 38, 67: 19, 68: 5, 72: 1} (m = 128)
+  orca worker L=3 ladder=[1, 2] N=64 m=128 gates=253: 128 samples in 61.66 s (first 6.56 s, median 0.195 s, max 27 s); numpy 2.5.4
+diag L=3 N=64 pass=0 shots=64 mean_s=0.7419 mean_from3_s=0.2247 median_s=0.1981 max_s=26.99 n_slow=2 n_slow_compiling=2 n_compiling=5 mean_noncompiling_s=0.1995 steady_s=0.1995 n_steady=59 onetime_s=34.71 censored=0  [09:47:55]
+diag L=3 N=64 pass=1 shots=64 mean_s=0.2215 mean_from3_s=0.2236 median_s=0.1883 max_s=1.936 n_slow=1 n_slow_compiling=1 n_compiling=1 mean_noncompiling_s=0.1943 steady_s=0.1924 n_steady=62 onetime_s=1.86 censored=0  [09:47:55]
+  orca worker: numba compilations during samples [(0, 30), (1, 124), (5, 6), (9, 8), (102, 2)]
+  orca worker: sample key lengths {127: 5, 128: 7, 129: 3, 130: 89, 132: 11, 133: 4, 135: 4, 136: 3, 137: 1, 138: 1} (m = 256)
+  orca worker L=3 ladder=[1, 2] N=128 m=256 gates=509: 128 samples in 215.04 s (first 11.7 s, median 0.649 s, max 115 s); numpy 2.5.4
+diag L=3 N=128 pass=0 shots=64 mean_s=2.715 mean_from3_s=0.7508 median_s=0.6564 max_s=115.5 n_slow=5 n_slow_compiling=4 n_compiling=4 mean_noncompiling_s=0.6612 steady_s=0.6612 n_steady=60 onetime_s=131.4 censored=0  [09:51:33]
+diag L=3 N=128 pass=1 shots=64 mean_s=0.6453 mean_from3_s=0.6502 median_s=0.642 max_s=1.387 n_slow=1 n_slow_compiling=1 n_compiling=1 mean_noncompiling_s=0.6335 steady_s=0.6279 n_steady=62 onetime_s=1.113 censored=0  [09:51:33]
+  orca worker: numba compilations during samples [(0, 53), (2, 243)]
+  orca worker: sample key lengths {255: 2, 256: 9, 258: 40, 259: 5, 260: 1, 263: 1, 265: 9} (m = 512)
+  orca worker L=3 ladder=[1, 2] N=256 m=512 gates=1021: 67 samples in 799.53 s (first 51.6 s, median 2.5 s, max 581 s); numpy 2.5.4
+diag L=3 N=256 pass=0 shots=3 mean_s=210.9 mean_from3_s=581 median_s=51.62 max_s=581 n_slow=2 n_slow_compiling=2 n_compiling=2 mean_noncompiling_s=0.008796 steady_s=0.008796 n_steady=1 onetime_s=632.6 censored=0  [10:04:57]
+diag L=3 N=256 pass=1 shots=64 mean_s=2.608 mean_from3_s=2.613 median_s=2.503 max_s=4.358 n_slow=64 n_slow_compiling=0 n_compiling=0 mean_noncompiling_s=2.608 steady_s=2.605 n_steady=63 onetime_s=0.1977 censored=0  [10:04:57]
+=== diag L=3: their steady 1 sample/s crossing N* = nan (nan = not bracketed; points [(64, 0.1995), (128, 0.6612)])
+orca_loop_bench ours: L=[3] ladder=[1, 2] N=[64, 128, 256] seed=0 cpus 24
+ours sector L=3 N=64 T=128 batch 10000: t_S = 0.6171 s for S = 10000 (6.171e-05 s/sample, tables excluded)  [10:04:59]
+ours sector L=3 N=64 T=128 batch 1024: t_S = 5.064 s for S = 10000 (0.0005064 s/sample, tables excluded)  [10:05:04]
+ours sector L=3 N=64 T=128 batch 64: t_S = 58.49 s for S = 10000 (0.005849 s/sample, tables excluded)  [10:06:04]
+ours sector L=3 N=128 T=256 batch 10000: t_S = 1.262 s for S = 10000 (0.0001262 s/sample, tables excluded)  [10:06:05]
+ours sector L=3 N=128 T=256 batch 1024: t_S = 10.52 s for S = 10000 (0.001052 s/sample, tables excluded)  [10:06:16]
+ours sector L=3 N=128 T=256 batch 64: t_S = 119.5 s for S = 10000 (0.01195 s/sample, tables excluded)  [10:08:17]
+ours sector L=3 N=256 T=512 batch 10000: t_S = 2.542 s for S = 10000 (0.0002542 s/sample, tables excluded)  [10:08:21]
+ours sector L=3 N=256 T=512 batch 1024: t_S = 21.03 s for S = 10000 (0.002103 s/sample, tables excluded)  [10:08:42]
+ours sector L=3 N=256 T=512 batch 64: t_S = 239.7 s for S = 10000 (0.02397 s/sample, tables excluded)  [10:12:44]
+=== ours sector L=3: 1 sample/s crossing N* = nan (nan = not bracketed)

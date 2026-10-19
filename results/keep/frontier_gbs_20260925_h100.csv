@@ -1,0 +1,10 @@
+engine,ratio,n_star,rho_eff,rho_theory,bracket,seconds
+gbs,1.0,42.9,1.37,,"timing model, S = 1e+04: n=42 at 1.26/s, n=43 at 0.98/s  ->  n* = 42.9; model n* at 8 / 64 s per sample 49.5 / 56.1 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,1.5,41.8,1.374,,"timing model, S = 1e+04: n=41 at 1.49/s, n=42 at 0.91/s  ->  n* = 41.8; model n* at 8 / 64 s per sample 48.7 / 54.9 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,2.0,41.5,1.375,,"timing model, S = 1e+04: n=41 at 1.23/s, n=42 at 0.78/s  ->  n* = 41.5; model n* at 8 / 64 s per sample 47.6 / 54.6 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,2.5,41.1,1.374,,"timing model, S = 1e+04: n=41 at 1.03/s, n=42 at 0.64/s  ->  n* = 41.1; model n* at 8 / 64 s per sample 47.0 / 54.2 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,3.0,40.6,1.369,,"timing model, S = 1e+04: n=40 at 1.11/s, n=41 at 0.94/s  ->  n* = 40.6; model n* at 8 / 64 s per sample 46.7 / 53.8 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,4.0,39.9,1.384,,"timing model, S = 1e+04: n=39 at 1.49/s, n=40 at 0.93/s  ->  n* = 39.9; model n* at 8 / 64 s per sample 46.3 / 52.7 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,6.0,39.1,1.394,,"timing model, S = 1e+04: n=39 at 1.06/s, n=40 at 0.67/s  ->  n* = 39.1; model n* at 8 / 64 s per sample 45.3 / 51.6 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,8.0,38.2,1.38,,"timing model, S = 1e+04: n=38 at 1.06/s, n=39 at 0.81/s  ->  n* = 38.2; model n* at 8 / 64 s per sample 44.5 / 51.1 (rho_eff = 64^(1/(n*_64 - n*)))",
+gbs,12.0,37.4,1.398,,"timing model, S = 1e+04: n=37 at 1.20/s, n=38 at 0.75/s  ->  n* = 37.4; model n* at 8 / 64 s per sample 43.6 / 49.8 (rho_eff = 64^(1/(n*_64 - n*)))",

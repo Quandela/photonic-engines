@@ -1,0 +1,2 @@
+input,ratio,L,ladder,N,T,chi,D,shots,samples_per_s,ms_per_sample,loop_eta,sampler,sector_max_amplitudes,sector_max_mean_n,table_seconds,spacing,rate_basis
+hybrid k=3,2.0,2,2,24,8,8,353697121050,1,1.11722040447243,895.0785323977469,,sector,67490280,7.0,0.0,1,batches >= 4 pooled

@@ -1,0 +1,18 @@
+assumed I = 0.95, T = 3.0 K, l = 12, eps delta = 0.001, eta_e = 72.733 GFLOPS/W, draws = 10000, seed = 1
+gpu: 280 W / R(M), R from built-in old-kernel plateau rates (bench/plot_energy.py), m/n = 2: 8: 4e+07/s, 12: 4.9e+06/s, 16: 8.08e+05/s, 20: 6.17e+04/s, 22: 1.62e+04/s, 24: 4.2e+03/s, 30: 105/s, 34: 9.3/s
+
+averaging   classical  crossings (M, between device n, direction of E^C - E^Q)
+    fixed      cc2018  M = 16.73 (n 29-30, up)
+    fixed  cc2018cont  M = 16.73 (n 29-30, up)
+    fixed      cc2020  M = 18.08 (n 31-32, up)
+    fixed         gpu  M = 11.40 (n 23-24, up)
+   device      cc2018  M = 14.53 (n 24-25, up)
+   device  cc2018cont  M = 14.53 (n 24-25, up)
+   device      cc2020  M = 15.82 (n 27-28, up); M = 13.71 (n 58-59, down)
+   device         gpu  M = 9.73 (n 15-16, up)
+      n-l      cc2018  M = 13.86 (n 26-27, up)
+      n-l  cc2018cont  M = 13.86 (n 26-27, up)
+      n-l      cc2020  M = 15.38 (n 28-29, up)
+      n-l         gpu  M = 9.93 (n 21-22, up)
+
+Soret et al.: M_e = 17 (fixed l = 12, appendix VI.3), M_e* = 15 (averaged, Fig. 2a); E^C = E^Q = 1.0e-8 Wh at n = 24, m = 51, eta = 60 %

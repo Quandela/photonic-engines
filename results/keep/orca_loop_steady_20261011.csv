@@ -1,0 +1,2 @@
+L,N,pass,shots,mean_s,mean_from3_s,median_s,max_s,n_slow,n_slow_compiling,n_compiling,mean_noncompiling_s,steady_s,n_steady,onetime_s,censored
+1,256,0,128,4.794348941468343,0.13854835842115185,0.10641623893752694,587.0883379885927,4,4,4,0.10625775366826283,0.10625775366826283,124,600.0756720384102,0

@@ -1,0 +1,4 @@
+circuit,n,m,param,target,level,compile_s,law_variant,tvd,floor,law_ok,build_ms,per_sample_ms,s_per_sample_at_max_shots,times,note
+loop,8,24,8,tensornet-mps,9,0.0,,,,,,,,1:5.701,10000-shot call: timeout after 900 s
+loop,12,32,8,tensornet-mps,13,,,,,,,,,,"failed at n=8, m=24"
+loop,16,40,8,tensornet-mps,17,,,,,,,,,,"failed at n=8, m=24"

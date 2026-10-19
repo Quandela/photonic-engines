@@ -1,0 +1,9 @@
+circuit,case,n,m,fock_dim,sv_dim,target,level,build_ms,per_sample_ms,tvd,tvd_floor,note
+loop,4:1,4,9,495,1953125,ours,,0.6879990862273644,8.946511798058054e-06,0.024506831768254266,0.09923563928252302,"chain rule, exact"
+loop,4:1,4,9,495,1953125,orca-photonics,5,1271.098669148146,0.00022305631735738038,0.02229279062843876,0.09923563928252302,cutoff 5 >= n+1: exact
+loop,4:1,4,9,495,1953125,tensornet,5,,,,,"qudits not supported by this target (refused in the frontend, correctly)"
+loop,4:1,4,9,495,1953125,tensornet-mps,5,,,,,"qudits not supported by this target (refused in the frontend, correctly)"
+loop,4:2,4,10,715,9765625,ours,,0.7427495359081604,9.554008784107282e-06,0.02139042907386328,0.11926639526219507,"chain rule, exact"
+loop,4:2,4,10,715,9765625,orca-photonics,5,7661.697283061828,0.00010696179136478653,0.015095643117992393,0.11926639526219507,cutoff 5 >= n+1: exact
+loop,4:2,4,10,715,9765625,tensornet,5,,,,,"qudits not supported by this target (refused in the frontend, correctly)"
+loop,4:2,4,10,715,9765625,tensornet-mps,5,,,,,"qudits not supported by this target (refused in the frontend, correctly)"

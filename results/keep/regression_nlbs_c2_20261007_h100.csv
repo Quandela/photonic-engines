@@ -1,0 +1,4 @@
+engine,ratio,eta,x,n,m,samples_per_s,ms_per_sample,seconds,shots,phi,sites,layout,eta_post,r,schmidt,impl,estimator,raw_rate,est_err,shot_cap,censored,s_1e4,ext_1e4,s_1e6,ext_1e6,s_1e8,ext_1e8
+nlbs,2.0,1.0,1.0,35,70,1.8487215243675206,540.9143490889561,138.2,128,pi/2,1,same-layer,1.0,,,,,,,,,,,,,,
+nlbs,2.0,1.0,1.0,36,72,1.0547012509223852,948.1357864375847,121.2,64,pi/2,1,same-layer,1.0,,,,,,,,,,,,,,
+nlbs,2.0,1.0,1.0,37,74,0.5475337329547314,1826.3714905811607,120.8,32,pi/2,1,same-layer,1.0,,,,,,,,,,,,,,

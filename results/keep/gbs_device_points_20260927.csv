@@ -1,0 +1,6 @@
+device,ratio,mean_photons_per_squeezer,r,eta,detected_per_source,n_star_1e4,N_S_1e4,priced_1e4,n_star_1e6,N_S_1e6,beyond64_1e6,device_n,note
+borealis,1,1.7888,1.1,0.33,0.59,39.6,60,0.45,36.3,71,0.43,216,"PNR; loop interferometer priced as Haar"
+jiuzhang3_r1.2,2.88,2.2785,1.2,0.43,0.98,19.1,62,0.64,16.2,73,0.66,50,"PNR proxy for pseudo-PNR"
+jiuzhang3_r1.4,2.88,3.6268,1.4,0.43,1.56,9.6,64,0.80,7.1,78,0.91,50,"PNR proxy; collision-heavy"
+jiuzhang4_r0.9,8,1.0526,0.9,0.51,0.54,38.3,56,0.0,35.0,67,0.17,1024,"PNR proxy for threshold"
+jiuzhang4_r1.8,8,8.5,1.8,0.51,4.4,,,,,,,1024,"n* < 1: outside the model's validity (pairing-search price validated at low collision density only)"

@@ -1,0 +1,97 @@
+=== run 20260928_135612 on h100-pcie - Mon Sep 28 11:56:25 UTC 2026
+NVIDIA H100 PCIe, 580.126.20, 81559 MiB
+torch 2.12.1+cu130
+triton 3.7.1
+
+=== job 1: python3 tests/check_gaussian_dd_gpu.py && timeout 1800 python3 bench/gbs_timing_model.py calibrate --device cuda --parts rate --precision dd --kernel torch --rate-n 12,16,20,24,28,32 --out $RESULTS_DIR/gbs_timing_rate_dd2.json; timeout 5400 python3 bench/gbs_pairing_bench.py run --patterns experiments/qca-data/gbs_pairing_patterns.json --device cuda --max-n 48 --dd --dd-max-n 36 --csv $RESULTS_DIR/gbs_pairing_dd2.csv   (11:56:27)
+A. gaussian.dd on CUDA against exact rationals
+  cmul             0.43 eps_dd  ok
+  add              0.30 eps_dd  ok
+  div              0.47 eps_dd  ok
+  cmatmul q=16     0.40 eps_dd  ok
+  cmatmul q=64   1032.99 eps_dd  FAIL
+  cmatmul q=128   42.74 eps_dd  FAIL
+B. dd sieve: CUDA (Triton series, fma) vs CPU (torch, Dekker)
+  N=12 V=1 counts [1, 1, 1, 1, 1, 1, 1, 1, 1, : |gpu dd - cpu dd| / max 3.8e-15, fp64 9.9e-15  FAIL
+  N=16 V=3 counts [1, 1, 1, 1, 1, 1, 1, 1, 1, : |gpu dd - cpu dd| / max 1.5e-14, fp64 8.3e-14  FAIL
+  N=12 V=1 counts [3, 2, 2, 1, 1, 1, 1, 1]    : |gpu dd - cpu dd| / max 3.1e-15, fp64 1.0e-14  FAIL
+  N=16 V=3 counts [4, 4, 3, 2, 1, 1, 1]       : |gpu dd - cpu dd| / max 5.6e-14, fp64 6.6e-13  FAIL
+  N=24 V=1 counts [1, 1, 1, 1, 1, 1, 1, 1, 1, : |gpu dd - cpu dd| / max 1.6e-12, fp64 1.4e-11  FAIL
+  N=24 V=3 counts [5, 4, 3, 3, 2, 2, 1, 1, 1, : |gpu dd - cpu dd| / max 2.2e-12, fp64 2.7e-11  FAIL
+FAILED
+heavy N=24 max count  6: random    0.101 s kappa 2.7e+08 terms 4.1e+03  v28    0.002 s kappa 2.7e+08 terms 4.1e+03  auto    0.002 s kappa 2.7e+08 terms 4.1e+03  cross    0.012 s kappa 6.1e+06 terms 1.8e+02  dd_cross    0.456 s kappa 6.1e+06 terms 1.8e+02 dd  dd_auto    0.232 s kappa 2.7e+08 terms 4.1e+03 dd  prec_auto    0.002 s kappa 2.7e+08 terms 4.1e+03
+heavy N=24 max count  4: random    0.002 s kappa 2.7e+06 terms 4.1e+03  v28    0.002 s kappa 2.7e+06 terms 4.1e+03  auto    0.002 s kappa 2.7e+06 terms 4.1e+03  cross    0.012 s kappa 1.4e+07 terms 3.8e+02  dd_cross    0.378 s kappa 1.4e+07 terms 3.8e+02 dd  dd_auto    0.229 s kappa 2.7e+06 terms 4.1e+03 dd  prec_auto    0.002 s kappa 2.7e+06 terms 4.1e+03
+heavy N=24 max count  4: random    0.002 s kappa 9.7e+06 terms 4.1e+03  v28    0.002 s kappa 9.7e+06 terms 4.1e+03  auto    0.002 s kappa 9.7e+06 terms 4.1e+03  cross    0.013 s kappa 2.0e+07 terms 6.5e+02  dd_cross    0.381 s kappa 2.0e+07 terms 6.5e+02 dd  dd_auto    0.229 s kappa 9.7e+06 terms 4.1e+03 dd  prec_auto    0.002 s kappa 9.7e+06 terms 4.1e+03
+heavy N=24 max count  6: random    0.002 s kappa 7.5e+07 terms 4.1e+03  v28    0.002 s kappa 7.5e+07 terms 4.1e+03  auto    0.002 s kappa 7.5e+07 terms 4.1e+03  cross    0.008 s kappa 3.1e+05 terms 4.3e+02  dd_cross    0.201 s kappa 3.1e+05 terms 4.3e+02 dd  dd_auto    0.229 s kappa 7.5e+07 terms 4.1e+03 dd  prec_auto    0.002 s kappa 7.5e+07 terms 4.1e+03
+heavy N=28 max count  5: random    0.011 s kappa 2.9e+08 terms 1.6e+04  v28    0.005 s kappa 2.9e+08 terms 1.6e+04  auto    0.005 s kappa 2.9e+08 terms 1.6e+04  cross    0.013 s kappa 1.3e+07 terms 4.8e+02  dd_cross    0.419 s kappa 1.3e+07 terms 4.8e+02 dd  dd_auto    0.609 s kappa 2.9e+08 terms 1.6e+04 dd  prec_auto    0.005 s kappa 2.9e+08 terms 1.6e+04
+heavy N=28 max count  7: random    0.005 s kappa 7.4e+07 terms 1.6e+04  v28    0.005 s kappa 7.4e+07 terms 1.6e+04  auto    0.005 s kappa 7.4e+07 terms 1.6e+04  cross    0.013 s kappa 8.1e+06 terms 4.8e+02  dd_cross    0.413 s kappa 8.1e+06 terms 4.8e+02 dd  dd_auto    0.609 s kappa 7.4e+07 terms 1.6e+04 dd  prec_auto    0.005 s kappa 7.4e+07 terms 1.6e+04
+heavy N=28 max count  6: random    0.005 s kappa 5.3e+09 terms 1.6e+04  v28    0.005 s kappa 5.3e+09 terms 1.6e+04  auto    0.005 s kappa 5.3e+09 terms 1.6e+04  cross    0.014 s kappa 1.3e+08 terms 2.8e+02  dd_cross    0.446 s kappa 1.3e+08 terms 2.8e+02 dd  dd_auto    0.609 s kappa 5.3e+09 terms 1.6e+04 dd  prec_auto    0.005 s kappa 5.3e+09 terms 1.6e+04
+heavy N=28 max count  5: random    0.013 s kappa 1.1e+07 terms 1.6e+04 REDO  v28    0.008 s kappa 3.4e+07 terms 6.9e+03  auto    0.008 s kappa 3.4e+07 terms 6.9e+03  cross    0.013 s kappa 6.7e+08 terms 9.6e+02  dd_cross    0.422 s kappa 6.7e+08 terms 9.6e+02 dd  dd_auto    0.509 s kappa 3.4e+07 terms 6.9e+03 dd  prec_auto    0.008 s kappa 3.4e+07 terms 6.9e+03
+heavy N=32 max count  5: random    0.068 s kappa 3.7e+07 terms 6.6e+04 REDO  v28    0.020 s kappa 3.3e+08 terms 1.9e+03  auto    0.020 s kappa 3.3e+08 terms 1.9e+03  cross    0.020 s kappa 3.3e+08 terms 1.9e+03  dd_cross    0.893 s kappa 3.3e+08 terms 1.9e+03 dd  dd_auto    0.527 s kappa 3.3e+08 terms 1.9e+03 dd  prec_auto    0.020 s kappa 3.3e+08 terms 1.9e+03
+heavy N=32 max count  7: random    0.039 s kappa 6.1e+05 terms 6.6e+04 REDO  v28    0.019 s kappa 3.2e+12 terms 7.8e+03  auto    0.037 s kappa 6.1e+05 terms 6.6e+04 REDO  cross    0.010 s kappa 1.3e+12 terms 5.4e+02  dd_cross    0.274 s kappa 1.3e+12 terms 5.4e+02 dd  dd_auto    0.685 s kappa 3.2e+12 terms 7.8e+03 dd  prec_auto    0.038 s kappa 6.1e+05 terms 6.6e+04 REDO
+heavy N=32 max count  6: random    0.039 s kappa 4.0e+06 terms 6.6e+04 REDO  v28    0.021 s kappa 4.4e+11 terms 5.2e+03  auto    0.039 s kappa 4.0e+06 terms 6.6e+04 REDO  cross    0.015 s kappa 9.5e+10 terms 7.0e+02  dd_cross    0.493 s kappa 9.5e+10 terms 7.0e+02 dd  dd_auto    0.572 s kappa 4.4e+11 terms 5.2e+03 dd  prec_auto    0.039 s kappa 4.0e+06 terms 6.6e+04 REDO
+heavy N=32 max count  7: random    0.033 s kappa 1.4e+07 terms 6.6e+04 REDO  v28    0.014 s kappa 8.6e+08 terms 1.4e+04  auto    0.014 s kappa 8.6e+08 terms 1.4e+04  cross    0.016 s kappa 5.8e+07 terms 1.4e+03  dd_cross    0.494 s kappa 5.8e+07 terms 1.4e+03 dd  dd_auto    1.152 s kappa 8.6e+08 terms 1.4e+04 dd  prec_auto    0.015 s kappa 8.6e+08 terms 1.4e+04
+heavy N=36 max count  7: random    0.120 s kappa 3.1e+04 terms 2.6e+05  v28    0.119 s kappa 3.1e+04 terms 2.6e+05  auto    0.119 s kappa 3.1e+04 terms 2.6e+05  cross    0.017 s kappa 5.9e+09 terms 1.7e+03  dd_cross    0.587 s kappa 5.9e+09 terms 1.7e+03 dd  dd_auto    0.601 s kappa 4.1e+09 terms 1.7e+03 dd  prec_auto    0.119 s kappa 3.1e+04 terms 2.6e+05
+heavy N=36 max count  5: random    0.121 s kappa 5.1e+06 terms 2.6e+05  v28    0.120 s kappa 5.1e+06 terms 2.6e+05  auto    0.121 s kappa 5.1e+06 terms 2.6e+05  cross    0.042 s kappa 1.9e+13 terms 9.7e+03  dd_cross    0.911 s kappa 1.9e+13 terms 9.7e+03 dd  dd_auto    0.926 s kappa 2.0e+13 terms 9.7e+03 dd  prec_auto    0.121 s kappa 5.1e+06 terms 2.6e+05
+heavy N=36 max count  9: random    0.120 s kappa 3.0e+07 terms 2.6e+05  v28    0.119 s kappa 3.0e+07 terms 2.6e+05  auto    0.046 s kappa 8.6e+08 terms 1.3e+04  cross    0.020 s kappa 2.1e+09 terms 1.2e+03  dd_cross    0.656 s kappa 2.1e+09 terms 1.2e+03 dd  dd_auto    1.210 s kappa 8.6e+08 terms 1.3e+04 dd  prec_auto    0.045 s kappa 8.6e+08 terms 1.3e+04
+heavy N=36 max count  5: random    0.120 s kappa 1.7e+05 terms 2.6e+05  v28    0.120 s kappa 1.7e+05 terms 2.6e+05  auto    0.120 s kappa 1.7e+05 terms 2.6e+05  cross    0.025 s kappa 1.4e+10 terms 2.9e+03  dd_cross    0.663 s kappa 1.4e+10 terms 2.9e+03 dd  dd_auto    0.677 s kappa 1.4e+10 terms 2.9e+03 dd  prec_auto    0.120 s kappa 1.7e+05 terms 2.6e+05
+heavy N=40 max count  6: random    0.512 s kappa 1.2e+07 terms 1.0e+06  v28    0.512 s kappa 1.2e+07 terms 1.0e+06  auto    0.512 s kappa 1.2e+07 terms 1.0e+06  cross    0.062 s kappa 6.3e+11 terms 2.8e+04  dd_cross    2.543 s kappa 6.3e+11 terms 2.8e+04 dd  prec_auto    0.512 s kappa 1.2e+07 terms 1.0e+06
+heavy N=40 max count  4: random    0.512 s kappa 1.1e+06 terms 1.0e+06  v28    0.512 s kappa 1.1e+06 terms 1.0e+06  auto    0.512 s kappa 1.1e+06 terms 1.0e+06  cross    0.044 s kappa 5.2e+10 terms 9.6e+03  dd_cross    1.116 s kappa 5.2e+10 terms 9.6e+03 dd  prec_auto    0.512 s kappa 1.1e+06 terms 1.0e+06
+heavy N=40 max count  4: random    0.512 s kappa 5.2e+07 terms 1.0e+06  v28    0.512 s kappa 5.2e+07 terms 1.0e+06  auto    0.089 s kappa 6.7e+09 terms 1.8e+04  cross    0.066 s kappa 5.7e+11 terms 1.8e+04  dd_cross    1.713 s kappa 5.7e+11 terms 1.8e+04 dd  prec_auto    0.088 s kappa 6.7e+09 terms 1.8e+04
+heavy N=40 max count  5: random    0.512 s kappa 1.5e+07 terms 1.0e+06  v28    0.512 s kappa 1.5e+07 terms 1.0e+06  auto    0.512 s kappa 1.5e+07 terms 1.0e+06  cross    0.107 s kappa 4.4e+11 terms 1.8e+04  dd_cross    1.710 s kappa 4.4e+11 terms 1.8e+04 dd  prec_auto    0.512 s kappa 1.5e+07 terms 1.0e+06
+heavy N=44 max count  4: random    2.742 s kappa 1.0e+06 terms 4.2e+06  v28    2.740 s kappa 1.0e+06 terms 4.2e+06  auto    2.742 s kappa 1.0e+06 terms 4.2e+06  cross    0.241 s kappa 1.4e+11 terms 3.2e+04  dd_cross    3.365 s kappa 1.4e+11 terms 3.2e+04 dd  prec_auto    2.744 s kappa 1.0e+06 terms 4.2e+06
+heavy N=44 max count  7: random    2.742 s kappa 1.2e+09 terms 4.2e+06  v28    2.745 s kappa 1.2e+09 terms 4.2e+06  auto    2.743 s kappa 1.2e+09 terms 4.2e+06  cross    0.098 s kappa 2.2e+14 terms 3.9e+04  dd_cross    4.366 s kappa 2.2e+14 terms 3.9e+04 dd  prec_auto    2.741 s kappa 1.2e+09 terms 4.2e+06
+heavy N=44 max count  5: random    2.738 s kappa 1.1e+09 terms 4.2e+06  v28    2.742 s kappa 1.1e+09 terms 4.2e+06  auto    2.741 s kappa 1.1e+09 terms 4.2e+06  cross    0.178 s kappa 3.8e+11 terms 5.2e+04  dd_cross    5.344 s kappa 3.8e+11 terms 5.2e+04 dd  prec_auto    2.738 s kappa 1.1e+09 terms 4.2e+06
+heavy N=44 max count  4: random    2.740 s kappa 1.6e+09 terms 4.2e+06  v28    2.742 s kappa 1.6e+09 terms 4.2e+06  auto    2.742 s kappa 1.6e+09 terms 4.2e+06  cross    0.175 s kappa 1.2e+15 terms 7.8e+04  dd_cross    8.292 s kappa 1.1e+15 terms 7.8e+04 dd  prec_auto    2.741 s kappa 1.6e+09 terms 4.2e+06
+heavy N=48 max count  4: random   23.047 s kappa 7.7e+08 terms 1.7e+07  v28   23.065 s kappa 7.7e+08 terms 1.7e+07  auto   23.092 s kappa 7.7e+08 terms 1.7e+07  cross    0.750 s kappa 4.1e+14 terms 2.5e+05  dd_cross   32.816 s kappa 4.2e+14 terms 2.5e+05 dd  prec_auto   23.080 s kappa 7.7e+08 terms 1.7e+07
+heavy N=48 max count  4: random   23.080 s kappa 9.0e+08 terms 1.7e+07  v28   23.080 s kappa 9.0e+08 terms 1.7e+07  auto   23.064 s kappa 9.0e+08 terms 1.7e+07  cross    0.402 s kappa 4.8e+12 terms 9.2e+04  dd_cross   11.677 s kappa 4.8e+12 terms 9.2e+04 dd  prec_auto   23.071 s kappa 9.0e+08 terms 1.7e+07
+heavy N=48 max count  5: random   23.066 s kappa 2.6e+07 terms 1.7e+07  v28   23.064 s kappa 2.6e+07 terms 1.7e+07  auto   23.066 s kappa 2.6e+07 terms 1.7e+07  cross    0.443 s kappa 3.1e+10 terms 1.4e+05  dd_cross   18.520 s kappa 3.1e+10 terms 1.4e+05 dd  prec_auto   23.063 s kappa 2.6e+07 terms 1.7e+07
+heavy N=48 max count  7: random   23.049 s kappa 1.9e+06 terms 1.7e+07  v28   23.057 s kappa 1.9e+06 terms 1.7e+07  auto   23.046 s kappa 1.9e+06 terms 1.7e+07  cross    0.294 s kappa 1.0e+16 terms 7.3e+04  dd_cross    9.313 s kappa 1.1e+16 terms 7.3e+04 dd  prec_auto   23.064 s kappa 1.9e+06 terms 1.7e+07
+light N=24 max count  2: random    0.003 s kappa 5.8e+07 terms 4.1e+03  v28    0.002 s kappa 5.8e+07 terms 4.1e+03  auto    0.002 s kappa 5.8e+07 terms 4.1e+03  cross    0.004 s kappa 1.0e+07 terms 3.1e+03  dd_cross    0.184 s kappa 1.0e+07 terms 3.1e+03 dd  dd_auto    0.230 s kappa 5.8e+07 terms 4.1e+03 dd  prec_auto    0.002 s kappa 5.8e+07 terms 4.1e+03
+light N=24 max count  2: random    0.002 s kappa 2.6e+07 terms 4.1e+03  v28    0.002 s kappa 2.6e+07 terms 4.1e+03  auto    0.002 s kappa 2.6e+07 terms 4.1e+03  cross    0.002 s kappa 8.2e+05 terms 4.1e+03  dd_cross    0.229 s kappa 8.2e+05 terms 4.1e+03 dd  dd_auto    0.230 s kappa 2.6e+07 terms 4.1e+03 dd  prec_auto    0.002 s kappa 2.6e+07 terms 4.1e+03
+light N=24 max count  2: random    0.002 s kappa 4.8e+07 terms 4.1e+03  v28    0.002 s kappa 4.8e+07 terms 4.1e+03  auto    0.002 s kappa 4.8e+07 terms 4.1e+03  cross    0.005 s kappa 1.5e+05 terms 2.3e+03  dd_cross    0.180 s kappa 1.5e+05 terms 2.3e+03 dd  dd_auto    0.230 s kappa 4.8e+07 terms 4.1e+03 dd  prec_auto    0.002 s kappa 4.8e+07 terms 4.1e+03
+light N=24 max count  2: random    0.002 s kappa 2.8e+06 terms 4.1e+03  v28    0.002 s kappa 2.8e+06 terms 4.1e+03  auto    0.002 s kappa 2.8e+06 terms 4.1e+03  cross    0.005 s kappa 1.3e+06 terms 2.3e+03  dd_cross    0.179 s kappa 1.3e+06 terms 2.3e+03 dd  dd_auto    0.230 s kappa 2.8e+06 terms 4.1e+03 dd  prec_auto    0.002 s kappa 2.8e+06 terms 4.1e+03
+light N=28 max count  2: random    0.005 s kappa 1.6e+09 terms 1.6e+04  v28    0.005 s kappa 1.6e+09 terms 1.6e+04  auto    0.005 s kappa 1.6e+09 terms 1.6e+04  cross    0.005 s kappa 1.5e+07 terms 1.6e+04  dd_cross    0.609 s kappa 1.5e+07 terms 1.6e+04 dd  dd_auto    0.609 s kappa 1.6e+09 terms 1.6e+04 dd  prec_auto    0.005 s kappa 1.6e+09 terms 1.6e+04
+light N=28 max count  2: random    0.011 s kappa 2.1e+06 terms 1.6e+04 REDO  v28    0.007 s kappa 9.3e+08 terms 1.2e+04  auto    0.007 s kappa 9.3e+08 terms 1.2e+04  cross    0.006 s kappa 9.3e+08 terms 1.2e+04  dd_cross    0.967 s kappa 9.3e+08 terms 1.2e+04 dd  dd_auto    0.968 s kappa 9.3e+08 terms 1.2e+04 dd  prec_auto    0.007 s kappa 9.3e+08 terms 1.2e+04
+light N=28 max count  2: random    0.012 s kappa 1.1e+07 terms 1.6e+04 REDO  v28    0.007 s kappa 1.0e+07 terms 9.2e+03  auto    0.007 s kappa 1.0e+07 terms 9.2e+03  cross    0.007 s kappa 1.0e+07 terms 9.2e+03  dd_cross    0.679 s kappa 1.0e+07 terms 9.2e+03 dd  dd_auto    0.679 s kappa 1.0e+07 terms 9.2e+03 dd  prec_auto    0.008 s kappa 1.0e+07 terms 9.2e+03
+light N=28 max count  3: random    0.012 s kappa 1.8e+07 terms 1.6e+04 REDO  v28    0.007 s kappa 4.6e+08 terms 6.1e+03  auto    0.007 s kappa 4.6e+08 terms 6.1e+03  cross    0.007 s kappa 4.6e+08 terms 6.1e+03  dd_cross    0.472 s kappa 4.6e+08 terms 6.1e+03 dd  dd_auto    0.471 s kappa 4.6e+08 terms 6.1e+03 dd  prec_auto    0.007 s kappa 4.6e+08 terms 6.1e+03
+light N=32 max count  2: random    0.037 s kappa 5.3e+07 terms 6.6e+04 REDO  v28    0.019 s kappa 1.2e+09 terms 4.9e+04  auto    0.019 s kappa 1.2e+09 terms 4.9e+04  cross    0.019 s kappa 1.2e+09 terms 4.9e+04  dd_cross    2.566 s kappa 1.2e+09 terms 4.9e+04 dd  dd_auto    2.566 s kappa 1.2e+09 terms 4.9e+04 dd  prec_auto    0.019 s kappa 1.2e+09 terms 4.9e+04
+light N=32 max count  3: random    0.037 s kappa 4.4e+06 terms 6.6e+04 REDO  v28    0.019 s kappa 2.3e+09 terms 3.7e+04  auto    0.019 s kappa 2.3e+09 terms 3.7e+04  cross    0.019 s kappa 2.3e+09 terms 3.7e+04  dd_cross    3.766 s kappa 2.3e+09 terms 3.7e+04 dd  dd_auto    3.766 s kappa 2.3e+09 terms 3.7e+04 dd  prec_auto    0.019 s kappa 2.3e+09 terms 3.7e+04
+light N=32 max count  3: random    0.037 s kappa 7.3e+07 terms 6.6e+04 REDO  v28    0.019 s kappa 5.7e+08 terms 3.7e+04  auto    0.019 s kappa 5.7e+08 terms 3.7e+04  cross    0.019 s kappa 5.7e+08 terms 3.7e+04  dd_cross    3.766 s kappa 5.7e+08 terms 3.7e+04 dd  dd_auto    3.767 s kappa 5.7e+08 terms 3.7e+04 dd  prec_auto    0.019 s kappa 5.7e+08 terms 3.7e+04
+light N=32 max count  3: random    0.037 s kappa 8.5e+06 terms 6.6e+04 REDO  v28    0.019 s kappa 7.5e+08 terms 3.7e+04  auto    0.019 s kappa 7.5e+08 terms 3.7e+04  cross    0.019 s kappa 7.5e+08 terms 3.7e+04  dd_cross    3.767 s kappa 7.5e+08 terms 3.7e+04 dd  dd_auto    3.770 s kappa 7.5e+08 terms 3.7e+04 dd  prec_auto    0.019 s kappa 7.5e+08 terms 3.7e+04
+Traceback (most recent call last):
+  File "./bench/gbs_pairing_bench.py", line 163, in <module>
+    main()
+  File "./bench/gbs_pairing_bench.py", line 159, in main
+    patterns(args) if args.cmd == "patterns" else run(args)
+                                                  ^^^^^^^^^
+  File "./bench/gbs_pairing_bench.py", line 108, in run
+    val, ab = H.lhaf_poly_multi(A, D0, D1, device=dev, return_abs=True, labels=lab,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/hafnian.py", line 831, in lhaf_poly_multi
+    acc, acc_abs = run(perm, groups, use_dd)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/hafnian.py", line 826, in run
+    return _sieve_multi(A, D0, D1, perm, groups, n, V, dev, budget_bytes, return_abs or check, dd=dd)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/hafnian.py", line 898, in _sieve_multi
+    terms(Ce, Ye, XYe, rows, Bb.repeat_interleave(c) * sgn.repeat(nb), n, V, acc, acc_abs, return_abs)
+  File "./photonic_engines/gaussian/hafnian.py", line 489, in _terms_dd
+    Rh, Rl = dd.cmatmul(Lh, Ll, Y, Z(Y))                             # [|jj|, c, 2p, 2V]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/dd.py", line 211, in cmatmul
+    A = left if left is not None else left_slices(ah, al)
+                                      ^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/dd.py", line 197, in left_slices
+    return slices(*embed_left(ah, al), beta, s, -1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/dd.py", line 152, in slices
+    rh, rl = two_sum(rh - sl, rl)                                   # rh - sl is exact
+             ^^^^^^^^^^^^^^^^^^^^
+  File "./photonic_engines/gaussian/dd.py", line 32, in two_sum
+    return s, (a - (s - bb)) + (b - bb)
+              ~~~~~~~~~~~~~~~^~~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 3.81 GiB. GPU 0 has a total capacity of 79.18 GiB of which 2.45 GiB is free. Including non-PyTorch memory, this process has 76.72 GiB memory in use. Of the allocated memory 75.62 GiB is allocated by PyTorch, and 215.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+=== job 1 exit 1 after 618 s
+
+=== done - Mon Sep 28 12:06:45 UTC 2026 - exit 1
