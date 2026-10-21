@@ -1,0 +1,10 @@
+point,unit,min_ms,median_ms,max_ms,spread_pct
+seq_kraus_k2,per bin,0.34,0.3772,0.4657,33.3
+seq_kraus_k3,per bin,0.7693,0.8888,1.0121,27.3
+seq_kraus_k4,per bin,3.3939,3.7435,3.9677,15.3
+seq_sample_k3_n20,per bin-shot,0.002,0.0021,0.0023,14.8
+seq_sample_diag_k6_n10,per tick-shot,1.7502,1.7843,1.8029,3.0
+seq_sample_diag_k8_n4,per tick-shot,76.5087,77.6812,81.7982,6.8
+loop_emitter_L4_N200,per tick-shot,0.0213,0.0216,0.0223,4.6
+loop_fock_chain_L8_N2000,per tick-shot,0.0048,0.0048,0.005,4.5
+hybrid_k2_L1_T60,per tick-shot,0.605,0.6261,0.8336,36.5

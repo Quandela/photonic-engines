@@ -293,8 +293,12 @@ def _get_layers_cached(n: int, m: int, mask: str, dev: str, backend: str):
 
 
 def clear_layers_cache() -> None:
-    """Drop every cached basis (frees their device memory once no kernel references them)."""
+    """Drop every cached basis (frees their device memory once no kernel references them), including the fine
+    (spatial x internal) stages built on them for internal photon modes.
+    """
     _get_layers_cached.cache_clear()
+    from .internal import _STAGES
+    _STAGES.clear()
 
 
 def device_bytes(layers) -> int:

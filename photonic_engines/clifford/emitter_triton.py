@@ -561,6 +561,7 @@ def sample_triton(state: EmitterMPS, U: torch.Tensor, shots: int,
     [shots]: the label unravelling of the traced slots (see `emitter_sampler.sample_torch`).
     """
     import time
+    state.require_uniform_labels("emitter sampler (triton / cuda)")
     dev = torch.device(device)
     assert state.chi == 2 and state.num_labels <= 2, "Triton version: chi = 2, L <= 2"
     if impl == "cuda":

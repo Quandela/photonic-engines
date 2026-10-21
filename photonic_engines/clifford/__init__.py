@@ -58,6 +58,7 @@ def emitter_sample(state: EmitterMPS, U: torch.Tensor, shots: int, generator: to
     interfering photons only — the same cost law as loss with eta -> eta x. Backends triton and
     torch.
     """
+    state.require_uniform_labels("emitter_sample")
     if backend == "triton":
         from .emitter_triton import sample_triton
         impl = lambda s, k, **a: sample_triton(state, U, s, device=device or "cuda", impl=kernel, keep=k, **a, **kw)

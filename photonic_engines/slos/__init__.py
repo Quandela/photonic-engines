@@ -7,6 +7,9 @@
              graded over photon numbers for indefinite-photon-number inputs)
   emitter    bond-carrying recurrence for EmitterMPS inputs (EmitterSLOSKernel), Kraus
              operators, and sampling from a computed distribution
+  stage      StageKernel: an emitter chain (StageChain) next to a batch of Fock inputs, Kraus
+             operators per input and output pattern (stage simulators); partial detection
+             (carry-over): block operators per detected pattern and the blockwise update
   estimate   additive-error (Gurvits-type) estimator of single amplitudes / probabilities for
              EmitterMPS inputs at polynomial cost (docs/ESTIMATE.md)
   gaussian   GaussianSLOSKernel: squeezed (Gaussian) inputs up to a global photon cutoff, on the same
@@ -28,11 +31,13 @@ try:                                   # the torch kernels; the distributed CPU 
     from .glynn import product_amplitude, product_probability
     from .kernel import FockSLOSKernel, GroupedSLOSKernel, ProductSLOSKernel, SuperpositionSLOSKernel
     from .reference import permanent, product_reference_probs, reference_probs
+    from .stage import CarryClass, StageCarry, StageGroup, StageKernel
 except (ImportError, OSError) as _e:
     if "torch" not in str(_e) and getattr(_e, "name", None) != "torch":
         raise
 
 __all__ = [
+    "CarryClass",
     "EmitterGurvitsEstimator",
     "EmitterSLOSKernel",
     "Estimate",
@@ -41,6 +46,9 @@ __all__ = [
     "GaussianSLOSKernel",
     "GroupedSLOSKernel",
     "ProductSLOSKernel",
+    "StageCarry",
+    "StageGroup",
+    "StageKernel",
     "SuperpositionSLOSKernel",
     "clear_layers_cache",
     "get_layers",

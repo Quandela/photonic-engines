@@ -310,7 +310,7 @@ feed-forward on the interferometer (routing, which changes ⟨n_i⟩_x itself), 
 spin–spin entanglement with the emitter × time graph used as a 2D cluster (the SPOQC / MBQC
 regime) — outside the static-U sampler this note is about.
 
-## 11. Local optics as spin-register operations: fusions, RUS, and a computer on the spins (2026-09-17)
+## 11. Local optics as operations on the spin register: fusions, RUS, and a computer on the spins (2026-09-17)
 
 For label-diagonal emitters the bin's Kraus operator is `K_t = V diag_x⟨t|U|x⟩ Uop` (§10): after
 the spin gates, the optics act on the register as an operator *diagonal in the label basis*,
@@ -556,3 +556,508 @@ k = 16–20, §12b), leaving the collapsed pass 2.5·10⁻¹⁴ → 1.1·10⁻¹
 emitter. The register frontier (k ≈ 22.6, §12b) carries ~2·10⁻¹³, 10¹⁰ below the 10⁻³ criterion of Supplement C, and the
 errors do not accumulate across ticks because the register is renormalised at every tick (§4). No compensated
 arithmetic is needed on this row.
+
+## 14. Internal modes (temporal / frequency) — data model and dispatch (2026-10-20, in progress)
+
+A photon may carry an internal mode index k ∈ [K] (a temporal wavepacket shape, a frequency) on which the interferometer
+acts as the identity and which the detectors do not resolve: the network is U ⊗ 1_K, photons interfere only within the
+same internal mode, and the outcome of a bin is the spatial pattern t with the internal index summed out. This is how a
+spin-dependent wavepacket enters (the emitted photon's temporal shape depends on the spin), with K set by the physics.
+
+**Data model.**
+- `ModeBinEmitter(ops [n, L, K, d, d], modes, s0, final=None, lost=None)`: emitter j applies ops[b, l, k] when its
+  photon of bin b leaves with label l in internal mode k; the emitted state is Σ_{l,k} ops[b,l,k]|s⟩ ⊗ b†_{modes[l],k}|0⟩.
+  `lost` [n, Q, d, d] holds the Kraus operators of an emission that never reaches the network (spin-dependent loss as
+  a Kraus split: Σ A†A + Σ N†N = 1); it is stored, not yet used.
+- The K internal modes are a basis shared by every emitter of a kernel; an emitter with fewer modes (or a plain
+  `BinEmitter`) uses the first ones.
+- `bin_emitter(ops, modes, s0, final, lost)` returns a plain `BinEmitter` for ops [n, L, d, d] or [n, L, 1, d, d]
+  without `lost` (the [:, :, 0] slice, a value copy), a `ModeBinEmitter` otherwise. `BinEmitter` and `EmitterMPS`
+  are unchanged.
+
+**Dispatch.** `SequenceKernel(emitters, m, …)` returns the subclass `ModeSequenceKernel` (`photonic_engines/sequence_modes.py`)
+when, and only when, some emitter is a `ModeBinEmitter`; otherwise it is `SequenceKernel` itself, whose methods are
+unchanged. Emitters with internal modes must come as a sequence (list, tuple, any `collections.abc.Sequence`); handed
+over in a bare iterator, they cannot be dispatched before construction and the plain kernel refuses them (TypeError).
+The only added cost for a problem without internal modes is two `isinstance` scans of the emitter list per
+construction (about 1 µs). `ModeSequenceKernel` shares the spatial basis of a bin (`layers`, `patterns`, `S`,
+`pattern_index`) and exposes `K` (internal modes; `k` stays the number of emitters) and `stage_ops(b)` (each emitter's
+operators of bin b on the shared K modes, zero-padded). A test classifies every public `SequenceKernel` member as
+refused, overridden or purely spatial, so a member added later cannot run on internal-mode emitters unnoticed.
+
+**The channel of a bin (`kraus`, `coarse`; `photonic_engines/slos/internal.py`).** The channel of a spatial outcome t
+is the sum over the fine patterns τ on the M = m K_b modes (spatial i, internal c) → c m + i whose sum over c is t:
+
+    E_t(rho) = sum_{tau -> t} K_tau rho K_tau^dag,    K_tau = sqrt(tau!) <tau| Phi>
+
+i.e. the bond-carrying SLOS recurrence of `slos.emitter` on the populated internal span K_b, written for the GPU:
+
+```
+kraus(U, b, compress=None):
+    A_j = stage_ops(b)                                   # per emitter [L_j, K, d_j, d_j] on the shared K modes
+    A_j = span(A_j, span_rtol)                           # drop all-zero internal modes (exact) or rotate to the
+                                                         #   singular basis and keep s > span_rtol * s_max -> K_b
+    A_j <- 1 (x) A_j (x) 1                               # on the product register chi
+    psi[q] = e_q  (q = 1..chi)                           # bond vectors, one per initial register state
+    for photon j (= emitter j):
+        C[(c, i)] = sum_l U[i, in_j(l)] A_j[l, c]        # one einsum, [M, chi, chi]: no dense U (x) 1_K
+        for chunks of raised modes (padded to the largest slab, < chunk_bytes):
+            nxt[child] += C[r] @ psi[parent]             # batched gather / contract / index_add
+    K_tau = sqrt(tau!) psi[:, :, tau]^T;  coarse[tau] = index of sum_c tau[c m + i]
+    compress: per outcome, SVD of the stacked vec K_q (rows s_i Vh_i), keep s > rtol * s_max (batched by size)
+```
+
+Physical operators [Q, chi, chi] with the contract of the partial-distinguishability path: the register update of
+pattern t is rho → Σ_{coarse[q] = t} K_q rho K_q^dag and Σ_q K_q^dag K_q = 1. Construction checks that every emitter is
+trace-preserving (Σ_{l,k} A^dag A (+ Σ N^dag N) = 1 to 1e-10). Not yet supported, refused with
+`NotImplementedError`: route R with `lost` operators, `order` (truncation at b distinguishable photons) with `indist`, masks other than Fock, and
+the uncompressed fine set of ticks whose fine set exceeds `max_bytes` (default 4 GB; `outcome_law` / `condition` reach
+them by the pairing route, `kraus(compress=rtol)` by route R below).
+Cost ≈ C(m K_b + k − 1, k) / C(m + k − 1, k) × the one-mode Kraus build; memory S_fine chi² × 16 B (about 4× that
+with `compress`, counted against `max_bytes`). Compression is the larger part of a compressed build at k = 3: one CPU
+thread, k = 2, K = 8: build 0.6 ms, build + compress 1.5 ms (528 → 160 operators); k = 3, K = 8: 26 ms and 260 ms
+(19 600 → 3 560) — a cached channel pays it once per tick shape and unitary.
+
+**The register update (`outcome_law`, `condition`).** `outcome_law(U, b, rho)` gives p(t) = Tr E_t(rho) for every
+pattern of bin b, `condition(U, b, rho, outcomes)` the unnormalised register E_C(rho) = Σ_{t∈C} E_t(rho) of an outcome
+class C (an index, a list of indices or a boolean mask [S]); rho is a state [D], a density matrix [D, D] or a batch
+[B, D, D]. Two routes:
+- **F**: the fine Kraus set above, applied (`einsum`, then `index_add` per pattern). Cost ≈ build + S_fine B D³.
+- **P′ (pairing)**: no Kraus set. Wick's theorem on the emitted monomials: ket photon j and bra photon π(j) share the
+  row and the internal mode, so K enters only through the pair Gram Γ_jj′[l, l′] = Σ_c A_j[l, c] ⊗ conj A_j′[l′, c]
+  (a d² × d² superoperator on (ket j, bra j′)). Glynn's form on both sides (event signs δ, bra-slot signs ε, first
+  entries +1) leaves only bijections, also for the ordered, non-commuting slot actions:
+
+```
+pairing_apply(U, A [n, L, K_b, d, d], in_modes [n, L], rows [T, n], t! [T], rho [B, D, D]):
+    Gamma[j, j', l, l'] = sum_c A_j[l, c] (x) conj A_j'[l', c]                 # [n, n, L, L, d^4], once per tick
+    for chunks of outcomes (memory < chunk_bytes):
+        c[t, delta, j, j', l, l'] = sum_e delta_e U[R_e, in_j(l)] conj U[R_e, in_j'(l')]    # one einsum
+        G[t, delta, j, j'] = sum_{l, l'} c[t, delta, j, j', l, l'] Gamma[j, j', l, l']      # one einsum
+        X[b, t, delta, eps] = rho[b]                                           # register tensor, 2n spin axes
+        for photon j:  X <- sum_j' eps_j' G[t, delta, j, j'] acting on (ket j, bra j') of X   # n^2 batched einsums
+        E_t(rho) = sum_{delta, eps} (prod delta)(prod eps) X / (t! 4^(n-1))
+        cert_t   = c n^2 eps_mach sum_{delta, eps} |X|_F / (t! 4^(n-1))      # a-posteriori Frobenius error bound
+```
+
+  Cost per outcome 4^(n−1) terms × n² d² D² × B, independent of K and of the fine set. Bunched rows need no special case.
+- **Certificate and fallback** (`tol`, default 1e-14): a result is accepted when √D × its certificate ≤ tol Tr rho
+  (trace norm); otherwise it is recomputed by F, and if F exceeds `max_bytes` a `ValueError` names the certificate and
+  the budget — a result above tol is never returned. The certificate is an a-posteriori estimate (term norms; the
+  constant leaves out the accumulation lengths), with a measured margin ≥ 12× against complex64 runs at k = 2–4.
+  A class is certified as a whole: the certificates of its
+  outcomes add up and their sum is compared with tol Tr rho in Frobenius norm (which bounds the operator norm of the
+  criterion; `outcome_law` keeps the √D trace-norm factor). Per outcome the certificate is ~1e-16 – 1e-15 (√D ×, fp64,
+  k = 2–5), so a class of more than about tol / that many outcomes leaves P′ — F if it fits `max_bytes`, otherwise a
+  `ValueError` naming the class size: pass a larger tol for large classes. Route F always sums a class directly, in one
+contraction over the class's fine operators (no per-operator term is formed); a class that falls back from P′ takes the
+same sum. By P′, a class of more than S/2 patterns is computed as the
+  emission channel ⊗_j Φ_j(rho) (Φ_j = Σ_{l,c} A_j · A_j^dag, the sum of every outcome's channel — an identity that
+  needs a unitary U, checked to 1e-13; otherwise the direct sum) minus its complement; the emission channel's own
+  error bound (c n ε ‖⊗_j |Φ_j| (|rho|)‖_F) enters the class certificate, and above tol the class is recomputed
+  directly by F.
+- **Memory**: the outcome chunk is sized from `chunk_bytes`, but one outcome is always processed whole
+  (≈ 48 · B · 4^(n−1) · d^(2n) bytes: 1.6 GB at n = 6, d = 2, B = 1), so the guard is soft from n = 6 or for large
+  batches.
+- **Gradients**: route F builds its Kraus set from a detached U (as `kraus`); P′ is differentiable in U. With
+  `route="auto"` the dispatcher decides, so pass `route="P"` when d/dU is needed.
+- **Dispatch** (`route="auto"`): per call, the cost model t_F = F0 + F_build n S_fine D³ (0 if cached) + F_apply S_fine
+  B D³ |C|/S against t_P = P0 + P |C| 4^(n−1) n² d² D² B, with device constants in `sequence_modes.COST`; P′ is taken
+  only when 2 t_P < t_F (the model's error must not become a regression, F being today's construction done natively).
+  An uncalibrated device takes F unless the fine set exceeds `max_bytes` (then P′); emitters of unequal spin dimension
+  take F. The fine set's size S_fine = C(m K_b + k − 1, k) is computed in closed form, so the dispatcher and the
+  `max_bytes` refusals never build a fine stage that does not fit (its host tables scale as S_fine: at k = 6, K = 8,
+  1.3·10⁹ fine patterns exhausted the host RAM of run 20261020_182236 before that change). The constants are
+  calibrated for CUDA from `bench/internal_modes_bench.py` on the H100 (run 20261020_182236, below) and for the CPU on
+  an Apple Silicon Mac (arm64, 10 cores, torch 2.14.1 with 8 threads; 2026-10-20; 9 points k = 2–4, K = 1, 3, 8;
+  kept CSV `results/keep/internal_modes_bench_20261020_mac_cpu.csv`; the same relative least squares as for CUDA):
+  F0 = 0.335 ms,
+  F_build = 3.93·10⁻¹⁰, F_apply = 5.46·10⁻¹⁰, P0 = 0.375 ms, P = 1.61·10⁻⁹ s/unit. On the CPU the dispatcher takes
+  the faster route at 8 of 9 points (k = 2, K = 8: F, 1.8× slower than P′, inside the factor-2 margin); P′ from
+  k = 3, K = 8 (8.1 ms against 22 ms) and at k = 4, K = 8 (0.47 s against 93 s for a 3 GB fine set). The P model is
+  up to 2.3× low at k = 3 (per-einsum overhead) and the F model 14× low at k = 4, K = 8; the constants are per
+  machine, but `COST` is keyed by device type only: every CPU (another machine, another thread count) uses this
+  Mac's entry. The pair ticks of a spin-photon processor keep F on the CPU: the regression bench gives 18/18 rows native faster,
+  routes unchanged. Since the CPU is calibrated, `route="auto"` on the CPU takes P′ from k = 3, K = 8 — so whether
+  the result is differentiable in U depends on the tick's size: pass `route="P"` when d/dU is needed (as on CUDA).
+
+**Status.** On a `ModeSequenceKernel` every other method raises `NotImplementedError`, as does `bin_mps` (a bin
+with internal modes has no EmitterMPS form on the spatial modes). The loop engines (`LoopRegisterKernel(emitter=)`,
+`HybridRegisterKernel`) refuse a `ModeBinEmitter` with `NotImplementedError`.
+
+**Partial distinguishability (`indist`, the x-model of docs/DISTINGUISHABILITY.md §3.4).** Photon j
+is in the common internal state with amplitude √x_j and in a private one (orthogonal to every other photon's) with
+√(1 − x_j), on top of its K internal modes — the Gram S_jj′ = √(x_j x_j′) of the species route. Two exact forms:
+
+```
+route F (and R's range samples):  A_j -> [ sqrt(x_j) A_j | 0 ... | sqrt(1 - x_j) span(A_j) (block j) | ... 0 ]
+                                  K_eff = K_b + sum_j r_j  (r_j = 0 when x_j = 1); exact-zero fine operators dropped
+route P' (and R's core):          Gamma_jj' <- sqrt(x_j x_j') Gamma_jj'  (j != j'),  Gamma_jj unchanged
+```
+
+The scaled pair Gram is the pair Gram of the extended emitters (the private blocks pair only with themselves), so P′'s
+cost does not change with x; F's fine set grows with K_eff (k = 3, K = 8, x = 0.7 on the Mac CPU: S_fine 19 600 → 1.2·10⁶,
+outcome law 0.11 s → 16 s by F, 75 ms by P′) — the dispatcher's cost model sees K_eff (with the CPU constants auto
+takes P′ there: 9 ms; and at k = 3, K = 3, x = 0.7: 10 ms against 265 ms by F), an uncalibrated device keeps F
+whenever it fits, so pass `route="P"` there. Most of that growth is structurally empty: the fine stage enumerates
+patterns with two photons in one emitter's private block, whose operators are exact zeros and are dropped after the
+build (the cost model counts them, as F really builds them). A fine stage that never enumerates them is a possible
+later improvement. The emission channel (P′'s complement path) is unchanged by x.
+Validation (tests/sequence/test_internal_modes_indist.py): at K = 1 (a `ModeBinEmitter` with one mode), F's private
+modes and P′'s scaled Gram give the species-resolved channel of today's `SequenceKernel(indist=…)` per outcome
+(superoperators ≤ 8.3·10⁻¹⁷, x = 0.8, 0 and per-emitter values, one emitter at x = 1); at K = 3, 8, P′ against F:
+the law ≤ 4.2·10⁻¹⁶, classes incl. the complement path ≤ 9·10⁻¹⁶ on the Mac and 1.4·10⁻¹⁵ on the H100 host's CPU
+(validation run 20261020_221250; tested against the criterion 10⁻¹⁴), R's compressed channel = F's; an oracle independent of
+the private-mode derivation: the expanded construction (labels (l, c) on m K modes) through the plain kernel's
+species route with the same indist, against F's superoperators and P′'s law (k = 2, K = 2, 3; < 10⁻¹⁴); x = 1 everywhere is the kernel
+without indist (the same operators); x = 0 on a balanced beam splitter fills the HOM dip (coincidence 1/2 by F and P′);
+completeness; CUDA against CPU (gpu-marked). `order` with internal modes is refused.
+
+**The no-photon branch (`lost`, source efficiency).**
+`ModeBinEmitter.lost` [n, Q, d, d] holds the Kraus operators of an emission that is never detected (spin-dependent
+loss as a Kraus split, Σ A†A + Σ N†N = 1). A source efficiency η is the same split and needs no field:
+`sequence_modes.source_loss(emitter, eta)` returns ops √η A and `lost` += √(1 − η) A[l, k] (every label and internal
+mode), the `lost` set reduced per bin to its Choi rank (≤ d² operators, SVD of the stacked operators, the
+absent-photon channel unchanged to ~10⁻²⁸ relative: F's presence branches multiply the absent emitters' `lost`
+counts, L·K each before the reduction); η = 1 returns the emitter without `lost`. A uniform detection efficiency
+moves to the sources the same way. With any `lost` operator a
+bin's outcomes are the patterns of k, k − 1, …, 0 detected photons: `patterns` / `S` list the k-photon block first
+(the lossless kernel's indices), then k − 1, …, and the all-zero pattern last; `coarse` and the outcome indices of
+`outcome_law` / `condition` refer to that list.
+
+```
+route F (presence branches):  for every subset P of emitters whose photon is detected (absent ones need `lost`):
+                                  K_P = fine set of the |P| photons (|P|-photon fine stage), coarse = its pattern
+                                  K <- K_P * prod_{j not in P} N_j[q]   (on the absent emitters' own spins)
+                              exact-zero operators dropped; compression per outcome as before
+route P' (z-grading):         photon j:  X <- eps_j Lam_j(X)_[ket j, bra j]  +  z sum_j' eps_j' G_jj'(X)_[ket j, bra j']
+                              Lam_j = sum_q N_q (x) conj N_q;  X carries the degree 0..|t| (higher dropped);
+                              E_t = degree-|t| part / (t! 2^max(|t|-1,0) 2^(k-1));  |t| = 0: (x)_j Lam_j(rho)
+emission channel:             Phi_j += sum_q N_q . N_q^dag (the complement path of `condition`)
+```
+
+Both Glynn sign symmetries (events and bra slots) hold at degree |t|; terms with more detected factors than events
+survive the event-sign sum and are what the degree index removes. Route R is refused with `lost` (it needs z-graded
+range samples). The dispatcher counts the fine sets of every presence subset for F and × (k + 1) for P′'s degree
+axis — both with the lossless constants of `COST`: no lossy point is calibrated yet (one belongs in the next
+calibration bench). Validation (tests/sequence/test_internal_modes_lost.py) against an oracle independent of both routes — the
+lossless problem with one dummy spatial mode per (emitter, `lost` operator), the operator as a label emitting into
+it, U ⊕ 1, through route F, the dummy occupations summed out: superoperators per outcome of 0..k photons ≤
+2.1·10⁻¹⁷, the law by P′ and F ≤ 4.2·10⁻¹⁷ (k = 2, 3; K = 2, 3; Q = 1, 2; one emitter without `lost`); the k-photon
+block keeps the lossless basis; the zero-photon outcome is ⊗_j Λ_j(ρ) by both routes (< 10⁻¹⁵); the conditioned
+register at k = 3 (the first size where the event and bra-slot sign groups differ in length) by P′ and by F against
+the oracle for one outcome of each photon number 0..3 and a mixed class, on a batch (< 10⁻¹⁴); P′ = F with `indist`
+and `lost` (law < 10⁻¹⁵; single outcomes of every photon number, a mixed class and the complement < 10⁻¹⁴);
+`source_loss`: η = 1 is the lossless kernel (the same operators), the Choi-rank reduction keeps the absent-photon
+channel (< 10⁻¹⁵), completeness, η per bin, against the oracle at η = 0.7 and (0.9, 0.5); R refused; CUDA against CPU (gpu-marked). CPU (Mac): k = 3, K = 3, Q = 2: 2 390 operators,
+F build 64 ms, P′ law 45 ms.
+
+**A register larger than the kernel (`condition(..., rest=X)`).** A spin-photon processor's
+register covers every spin; a tick's kernel sees only the emitting ones (D), the others (X) are entangled with them.
+`condition(U, b, rho, outcomes, rest=X)` takes rho [D X, D X] (or a batch), kernel spins first, and returns
+(E_C ⊗ id_X)(rho): the X² blocks rho[(·, x), (·, y)] go through the routes as one batch (route F: K_q per block; P′:
+X² × the apply work), and the blocks' certificates of one register are combined in Frobenius norm (the error matrix of
+the whole register) and compared with tol Tr rho of the whole register — passing the blocks as an ordinary batch would
+compare each with its own trace, ~0 for an off-diagonal block, and force every one to F. The batch is X² × B blocks
+(memory and apply work × X² — the dispatcher sees that batch size); a pure state [D X] is not accepted with `rest`
+(pass its density matrix). Validation (tests/sequence/test_internal_modes_route_p.py): P′ and F against E_C applied
+block by block, a single outcome, a class and the complement path, with and without `lost` (P′ < 10⁻¹⁴, the
+criterion for class sums; F torch.equal), the pairing result kept.
+
+**The weak route: `sample_apply` (R = 1, no `lost`; branches in the next paragraph).** One tick
+of pure-state trajectories for a batch of streams, without a density matrix and without the fine set: the
+operator-valued Clifford–Clifford chain ("CC-spin"). Recording the fine pattern (each event's row and internal mode)
+is a valid unravelling of the coarse channel, so the detected-pattern law and the averaged post-state are exact; it
+holds for generic emitters (physical quantum-dot emitters are not label-preserving once K > 1), with `indist`
+through the private internal modes of the x-model above, and a passive rest X.
+
+```
+sample_apply(U, b, psi [S, D, X], generator):            # emitters complete, all photons detected: M = 1
+    uniforms [S, k] <- generator                          # the draws do not depend on chunking or device
+    v[{}] = psi
+    for j = 1..k:                                         # one detected photon per step
+        for every subset S of the k emitters with |S| = j (subset tables, chunked):
+            y[S, i, l, c] = A_i[l, c] v[S - i]            # on spin i
+            G_c[S] = <y[S, ., ., c] | y[S, ., ., c]>      # a jL x jL Gram per internal mode c
+        W(row, c) = sum_S u_row^dag G_c[S] u_row,   u_row[(i, l)] = U[row, in_i(l)]
+        check |sum W - (k - j + 1) sum_{|S'|=j-1} |v[S']|^2| <= tol_draw x that      # exact identity
+        e* = (row*, c*): inverse CDF of W at uniforms[:, j]
+        v[S] = sum_{i in S, l} U[row*, in_i(l)] y[S, i, l, c*]   for every |S| = j
+    psi' = v[all] / |v[all]|;  pattern = the drawn rows (internal modes summed), index into `patterns`
+```
+
+- API: `sample_apply(U, b, psi, generator=None, tol_draw=1e-10, U_streams=None, chunk_bytes=None)` → (pattern index
+  [S], psi′ [S, D, X] normalised, info: `events` [S, k, 2] (row, internal mode) in draw order, `deviation` [k], `prob`).
+  psi [S, D] or [S, D, X], normalised per stream (checked to 10⁻¹⁰); `U_streams` [S, m, m] one unitary per stream; U
+  must be unitary (≤ 10⁻¹³); detection loss goes through `eta_out` (below), not a sub-unitary U. Streams and subsets are chunked by `chunk_bytes`. The draws are made on the host
+  from float64 weights: on CUDA the same seed gives the CPU's draws except for a rare flip at a weight boundary,
+  where the CPU run is the reference.
+- Cost per stream-tick: Σ_j C(k, j) · j · L · K_eff local applies of a D × X vector and the Grams — linear in the
+  populated internal modes, memory C(k, j) · D · X per stream and step. Timings: the H100 paragraph below.
+- Validation (tests/sequence/test_internal_modes_ccspin.py): T2, exact enumeration of every ordered chain (forced
+  events, one stream each): Σ P(chain) ψ′ψ′† per detected pattern equals E_t(ψψ†) by route F and by P′ — measured
+  ≤ 9.7·10⁻¹⁷ (k = 2, 3; K = 1, 2, 3; X = 1, 2; indist (0.7, 0.4); bunched outcomes), total probability 1 to 2·10⁻¹⁶;
+  T3 (fixed seeds), the pattern histogram against `outcome_law`: k = 3, K = 3, 2·10⁴ streams χ² = 41.6 on 55 dof;
+  k = 4, K = 8, 10⁵ streams (slow tier) χ² = 313.8 on 328 dof; the Monte-Carlo average of ψ′ψ′† on the likeliest
+  outcome against `condition` / p; T4, the per-step identity ≤ 10⁻¹³ on every test (measured ≤ 10⁻¹⁵); same seed,
+  same draws; stream chunking keeps the draws; `U_streams`; the unitarity, normalisation and `lost` refusals; T5, K = 1
+  label-preserving emitters (A_l = |l⟩⟨l| G, k = 3): the enumerated chain equals the plain `SequenceKernel`'s channel
+  per outcome (< 10⁻¹⁴); CUDA against CPU (gpu-marked). A complex64 probe: the law's TV error 0.2–0.5 ε, the identity check firing at 2.4–5× that. The plain `SequenceKernel`'s label route, `fock_sample` and `sample_diag` are unchanged (fingerprint
+  38/38 bit-identical).
+
+**The weak route with branches.** `sample_apply` covers every emitter of
+the internal-mode kernel:
+- **`lost` operators and R > 1 unobserved outcomes**: each emitter's branch — an unobserved outcome r, or a `lost`
+  operator q — is an orthogonal environment record, drawn first, emitter by emitter at the amplitude level:
+  b_j ~ ⟨φ|G_{j,b}|φ⟩/⟨φ|φ⟩ on spin j with G_{j,r} = M_{j,r} = Σ_{l,k} A_r†A_r and G_{j,q} = N_q†N_q, φ ← G_{j,b_j}^{1/2} φ
+  (the conditionals multiply to ⟨ψ|⊗_j G_{j,b_j}|ψ⟩: operators on different spins commute); then
+  ψ_b = ⊗_{lost j} N_{j,q_j} ψ, and the chain runs over the present photons with the operators A_j[·, ·, r_j] and,
+  in every norm, the trace weight ⊗_{not yet detected} M_{j,r_j} of the photons still to come (no longer the
+  identity). Streams are grouped by their branch word; info["branch"] [S, k] holds r, or R_j + q for a lost photon.
+  Patterns of fewer than k photons index into the lossy `patterns` (the no-photon branch above).
+- **A non-uniform detection efficiency**: `sample_apply(..., eta_out=[m])` dilates U to the isometry
+  [[diag(√η) U], [diag(√(1−η)) U]] (2m candidate rows); events on the loss rows are not reported, and the pattern
+  index refers to `patterns_all` (0..k detected photons; = `patterns` for a kernel with `lost`). A uniform
+  efficiency stays at the sources (`source_loss`).
+- Draws: 2k uniforms per stream (k for the branches, k for the chain); without branches the k of the complete case, so
+  the draws of a complete kernel are unchanged.
+- Outputs: info["occ"] [S, m], the detected occupations (also of the pattern index); `index=False` (or a basis whose
+  key (k + 1)^m exceeds int64, e.g. k = 10, m = 20, where the pattern list itself is large) returns None as the index.
+  info["events"] keeps the loss rows (m..2m−1) of `eta_out`. The branch step has its own identity check,
+  Σ_b ⟨φ|G_{j,b}|φ⟩ = ⟨φ|φ⟩ (completeness), info["branch_deviation"], against `tol_draw` like the chain's. The
+  unitarity tolerance of `sample_apply` and of `condition`'s complement path is 10³ ε of the kernel's dtype
+  (2.2·10⁻¹³ in complex128), so a complex64 kernel is not refused. A complex64 probe with branches: total
+  probability 1, TV 0.5 ε, the identity alarm at 3.6–4.6×.
+- Validation (tests/sequence/test_internal_modes_ccspin_branches.py): T2, exact enumeration of every (branch word,
+  chain) as forced streams: Σ P ψ′ψ′† per detected pattern (0..k photons) equals E_t(ψψ†) by route F and by P′ —
+  measured ≤ 4.9·10⁻¹⁷ (k = 2, 3; K = 2; R = 1, 2; Q = 0, 1; rest X = 2; indist), total probability 1 to 2·10⁻¹⁶;
+  eta_out (η = 0.9, 0.6, 0.75, 0.3): the enumeration over the dilated U equals route F on the problem with explicit
+  loss modes (U completed to a unitary on 2m modes, the loss occupations summed out), < 10⁻¹⁴; T3 (fixed seed), k = 3,
+  K = 2, R = 2, Q = 1, 2·10⁴ streams: χ² = 73.3 on 83 dof over the 0..3-photon patterns; the same seed gives the same
+  branches and draws; T4 ≤ 10⁻¹³ (measured ≤ 6.3·10⁻¹⁶).
+
+**The weak route on the H100.** `bench/internal_modes_ccspin_bench.py`, run 20261021_073232 on one H100 PCIe (a short
+de-risk run 20261021_073057; the code validated on the GPU in run 20261021_072158); kept CSV
+`results/keep/internal_modes_ccspin_20261021_h100.csv`. One `sample_apply` tick, k emitters with qubit spins on
+m = 2k modes, generic emitters, K internal modes, S streams from one random state, median of 3 (`index=False`):
+
+| k | K = 1: S = 1 / 100 / 10⁴ | K = 8: S = 1 / 100 / 10⁴ |
+|---|---|---|
+| 2 | 2.9 ms / 3.0 ms / 4.9 ms | 3.1 ms / 3.1 ms / 11 ms |
+| 4 | 6.5 ms / 6.7 ms / 9.9 ms | 7.0 ms / 7.1 ms / 39 ms |
+| 6 | 11 ms / 12 ms / 91 ms | 12 ms / 13 ms / 0.61 s |
+| 8 | 18 ms / 23 ms / 2.0 s | 20 ms / 0.17 s / 16 s |
+| 10 | 29 ms / 0.53 s / 52 s | 34 ms / 3.3 s / (predicted 332 s, not run) |
+| 12 | 80 ms / 7.9 s / (predicted 792 s, not run) | 0.49 s / 49 s / (predicted 4 938 s, not run) |
+
+Up to k ≈ 6 a tick is bound by its fixed per-call cost (Python steps over the subset tables, launches), so batching
+the streams is what matters: 10⁴ streams cost about as much as one at k ≤ 4. From k ≈ 8 the arithmetic dominates and
+grows as the model predicts, linearly in K: at k = 12, K = 8 a stream-tick costs 0.49 s against 0.08 s at K = 1.
+The per-step identity stayed ≤ 1.2·10⁻¹⁵ on every row. Fitted (`COST["cuda"]`, 92 rows, relative least squares):
+t = 2.96 ms + 2.02·10⁻⁴ s · k² + 1.54·10⁻¹¹ s · S · units, within 2.9× of every row (median 1.25×); CPU (the Mac,
+k = 2–7, `results/keep/internal_modes_ccspin_20261021_mac_cpu.csv`): 0.56 ms + 7.3·10⁻⁵ s · k² + 1.05·10⁻⁹ s · S ·
+units, within 3.0×. `sample_apply_cost(U, b, streams, X)` returns the prediction (None on an uncalibrated device)
+for the measured case — all k photons present, R = 1; with `lost` or R > 1 the all-present units bound a stream's
+arithmetic, but each distinct branch word of the batch is a separate chain call paying the per-call terms again.
+
+**Coarse outcome classes.**
+- `condition(U, b, rho, outcomes, weights=w)`: the weighted class E_w(rho) = Σ_t w_t E_t(rho), w ≥ 0 — one weight per
+  entry of `outcomes` (repeated entries add up) or one per pattern [S] (restricted to the class), e.g. a
+  detector-noise predecessor Σ_o T(o′|o) E_o(rho). Route F contracts the weighted operators in one pass; the pairing
+  route sums the weighted results, with the certificate Σ_t w_t cert_t judged as for a class (and per register with
+  `rest=`); a weighted class always takes the direct sum (the emission-channel complement is for 0/1 classes only).
+- `kraus(U, b, compress=rtol, classes=c)` / `coarse(..., classes=c)`, c [S] an integer class id per pattern (−1:
+  dropped): route F's operators grouped by class, `coarse` returning the class id; with `compress`, the existing
+  batched SVD per class gives the class's Choi-rank set. Route F only (no route R per class). Threshold click patterns stay a class map on the caller's side.
+- Validation (tests/sequence/test_internal_modes_classes.py), with and without `lost`: a weighted class equals the
+  weighted sum of its members (F and P′, per-entry and per-pattern weights, with `rest=`; < 10⁻¹⁵); a mask equals 0/1
+  weights; class superoperators equal the sum of the members' (< 10⁻¹⁵); the compressed count per class equals the rank
+  of the stacked member operators, the same channel (< 10⁻¹⁴); dropped outcomes have no operator; validation errors.
+
+**Unobserved emission outcomes (ops [n, L, K, R, d, d]).** An emission can leave the spin's
+environment in one of R orthogonal states r (e.g. a spin flip after the emission): `ModeBinEmitter.ops[b, l, k, r]`,
+completeness over (l, k, r) (+ `lost`). Different r never interfere (orthogonal environment states, not photon
+modes: they cannot be folded into the internal modes), so the channel is the sum over the r-words (one r per
+emitter) of the R = 1 channels of the slices `ops[:, :, :, r]`:
+- route F: the fine set of every r-word (the |P| present emitters' words in the presence branches), concatenated;
+  one internal span over every (emitter, r) slice, so K_eff does not depend on the word;
+- route P′: the sum of the pairing results over the r-words (certificates add up); with `lost`, Λ_j / R_j, so that the
+  sum over r_j of a term with photon j absent counts Λ_j once (r_j appears nowhere else in it);
+- the emission channel (P′'s complement path) stacks every r along the label axis;
+- route R refuses R > 1 (it needs r-word range samples).
+
+Cost: × ∏_j R_j (R^k words) on both routes — the fine set has ∏_j R_j × S_fine operators and P′ evaluates
+∏_j R_j pairing sums; the dispatcher counts both factors. ops [n, L, K, 1, d, d] is the plain form (the same operators,
+torch.equal). Validation (tests/sequence/test_internal_modes_rwords.py) against an oracle independent of the r-word
+sum — each spin dilated by an environment register of dimension R, A′ = Σ_r A_r ⊗ |r⟩⟨0| (an isometry on the
+environment-|0⟩ subspace the register starts in), `lost` ⊗ 1, through the R = 1 path, the environments traced: the
+conditioned register of one outcome per photon number and of a class over half the patterns (the complement), F and
+P′, < 10⁻¹⁴ (k = 2, 3; K = 2, 3; R = 2, 3; with `lost` and with `indist`); completeness over r (a single r slice is
+refused); R refused; `source_loss` keeps the r axis; CUDA against CPU (gpu-marked).
+
+**Validation (tests/sequence/test_internal_modes.py, test_internal_modes_route_f.py).** One internal mode is
+bit-identical to today: emitters built from [n, L, 1, d, d] give a plain `SequenceKernel` whose Kraus sets, sequence
+probabilities and trajectories are `torch.equal` to those of today's emitters. The channel route:
+- against the expanded construction (labels (l, c) on m K modes through the plain kernel, U ⊗ 1_K, outcomes summed
+  over c), per outcome, superoperator difference / chi: 7·10⁻¹⁸ – 1.4·10⁻¹⁷ (k = 1–3 emitters, K = 2, 3, 8, unequal K,
+  a plain emitter among internal-mode ones, per-bin unitaries); completeness ≤ 10⁻¹³;
+- against a 50-digit evaluation of K_τ = (1/√τ!) Σ_σ Π_j O_j[R_σ(j), c_σ(j)], element by element: 6–7·10⁻¹⁷ (k = 2, 3);
+- invariances: A → A V (V unitary on the internal space) leaves the channel unchanged (< 10⁻¹⁴); an all-zero internal
+  mode is dropped bit-identically; a spin-independent shape (A[l, k] = v_k A[l]) with `span_rtol` is the plain channel
+  (< 10⁻¹³);
+- `compress=1e-12`: the same channel (< 10⁻¹⁴) with at most min(F_t, chi²) operators per outcome (k = 2, K = 8: 528 → 160);
+- compression finds the exact rank of outcomes built with rank r = 1, 3, 4, 5, 9 (SVD of the stacked operators, not
+  eigh of their Gram matrix, whose √ε floor would keep noise operators);
+- chunked and unchunked propagation agree; CUDA against CPU (gpu-marked test; on CUDA the layer's index_add_ is not
+  bitwise reproducible run to run, only to rounding).
+
+The pairing route (tests/sequence/test_internal_modes_route_p.py), against route F:
+- outcome law and conditioned register on batches of density matrices, < 10⁻¹⁵ (k = 1–3, K = 2, 3, 8, two bins,
+  single outcomes, pairs and a class via the complement); the law sums to Tr rho (< 10⁻¹³);
+- classes: a class equals the sum of its members, a mask its index list, a pure state its density matrix, the
+  complement path the direct sum; bunched outcomes (t! = 2);
+- the certificate is at least the measured distance to F and below 10⁻¹³ (k = 2–4); the emission channel equals the
+  sum of every outcome's channel (< 10⁻¹⁴, within its certificate);
+- `tol = 0` returns F's result exactly; a class whose summed certificate exceeds tol falls back as a whole; with F over
+  `max_bytes` the fallback raises; a large class: route F and P′'s fallback are the direct F sum exactly, a
+  non-unitary U takes the direct sum; k = 4, a class of S/2 outcomes with F over `max_bytes`: a tol below its summed
+  certificate raises, above it the pairing result agrees with F (< 10⁻¹⁴); the dispatcher's three cases; CUDA against CPU (gpu-marked).
+
+Timing: `bench/internal_modes_bench.py`. CPU (Mac, 2026-10-20, before the no-photon branch; outcome law of one random density
+matrix, uncached, qubit spins, m = 2k; F's law takes traces without forming the matrices): P′ 0.38 ms / 8.8 ms /
+0.47 s at k = 2 / 3 / 4 for every K = 1, 3, 8 (flat in K, as designed); F (build + apply) 0.27 / 0.30 / 0.71 ms
+(k = 2, K = 1 / 3 / 8), 0.74 / 2.4 / 23 ms (k = 3), 3.5 / 116 ms (k = 4, K = 1 / 3); the expanded construction
+0.78 / 2.1 ms (k = 2, K = 3 / 8), 5.4 / 34 ms (k = 3), 115 ms (k = 4, K = 3); k = 4, K = 8: the fine set needs
+2.9 GB, P′ only. On the CPU, P′ wins from k = 3, K = 8 (8.9 ms against 23 ms for F, 34 ms expanded).
+
+H100 PCIe (run 20261020_182236; validation run 20261020_182138: the 49 internal-mode tests pass on the GPU; kept CSV `results/keep/internal_modes_bench_20261020_h100.csv`;
+same quantities as above, median of 5 reps at k = 2–4, 2 at k = 5–6):
+
+| k | K = 1: F / P′ | K = 3: F / P′ / expanded | K = 8: F / P′ / expanded |
+|---|---|---|---|
+| 2 | 1.4 ms / 1.4 ms | 1.4 / 1.4 / 2.9 ms | 1.4 / 1.5 / 6.4 ms |
+| 3 | 1.7 ms / 1.9 ms | 2.0 / 2.0 / 5.8 ms | 2.7 / 2.0 / 14 ms |
+| 4 | 2.0 ms / 9.0 ms | 4.5 / 9.1 / 10 ms | 153 / 9.2 / 278 ms |
+| 5 | 3.4 ms / 1.19 s | 309 ms / 1.19 s / 394 ms | F needs 471 GB / 1.19 s / — |
+| 6 | 55 ms / 170 s | F needs 274 GB / 171 s / — | not measured (host OOM, fixed since) |
+
+P′ is flat in K, as designed; below k = 4, F and P′ are both at the ~1.5–2.7 ms call overhead. The fitted constants (relative
+least squares over the 14 points): F0 = 1.29 ms, F_build = 3.58·10⁻¹², F_apply = 2.50·10⁻¹², P0 = 1.60 ms,
+P = 2.25·10⁻¹¹ s/unit. With them `route="auto"` takes P′ at k = 4, K = 8 (9.2 ms against 153 ms) and wherever F does
+not fit, F elsewhere — the faster route at every point except k = 3, K = 3 (F 0.4 % slower) and K = 8 (F 2.7 ms
+against P′ 2.0 ms), both inside the factor-2 margin the dispatcher keeps against the model's error. The calibration
+covers one density matrix (B = 1) and the full outcome set: batches (B > 1) and classes rest on the model's linear
+extrapolation and should be measured before a batched-register use relies on them; F0 and P0 are fits to the
+overhead-bound points (k = 2–3), not device constants. At k = 4, K = 8 and
+k = 5, K = 3 the expanded construction's time was measured but its channel comparison ran out of GPU memory.
+
+**No regression on spin-photon processor ticks** (`bench/internal_modes_regression.py`). A spin-photon processor's
+time-mode ticks are pair blocks: k = 2 dual-rail qubit emitters on m = 4 modes, K = 3 (bare trion), 4 (cavity),
+7 (two Overhauser samples), 8 (the n-dot saturation), and unequal K (3:2, 8:7); generic
+emitters (full Choi rank, the costliest case), Haar U, batches of B = 1, 16, 64 density matrices. Per tick, route
+"auto" against the expanded construction: the compressed channel (`kraus(compress=1e-12)` against the expanded set
++ the same per-outcome compression), the outcome law, and the conditioning on a class of half the outcomes. CPU (Mac,
+2026-10-20, median of 7): auto takes F on every row (the CPU was uncalibrated then; with the CPU constants in
+`COST["cpu"]` it still takes F on every row, 18/18 native faster), and native is
+faster than expanded on all 18 rows — channel 1.8–2.1×, law 1.3–3×, class 1.5–2.6× (closest row: law at K = 7,
+B = 64, 2.6 ms against 3.4 ms); the two constructions agree to ≤ 1.1·10⁻¹⁶ (law and class, max abs). Before route F
+summed a class in one contraction, the class at K = 8, B = 64 was level with expanded (3.6–3.7 ms against 3.4–3.6 ms).
+The no-photon (`lost`) operators of physical emitters are not modelled in this bench. H100 PCIe (run 20261020_193633; the 50
+internal-mode tests pass on the GPU first): auto
+takes F on every row, native faster on all 18 — channel 1.4–1.7×, law 1.8–4.0×, class 1.8–3.8× (closest row:
+channel at K = 8:7, 11.9 ms against 17.1 ms) — agreement ≤ 1.4·10⁻¹⁶; CSV `results/20261020_193633/internal_modes_regression.csv`.
+
+**The compressed channel without the fine set (route R).** `kraus(U, b, compress=rtol, route="R")`
+gives per outcome the same Choi-rank set as F's compression, at a cost set by the Choi rank r_t (≤ min(F_t, D²)),
+not by the fine set (F_t = Π_i C(K_b + t_i − 1, t_i) fine patterns of t; S_fine = Σ_t F_t). Two pieces, both
+independent of K beyond the pair Gram:
+
+```
+range_kraus(U, A, in_modes, rows, t!, F_t, rtol, tol):
+    # range: vec K(w) lies in range(J_t), J_t = sum_tau vec K_tau vec K_tau^dag
+    for chunks of outcomes, s = min(cap, 8) + p samples (p = 4), cap_t = min(F_t, D^2):
+        w[t, s, e] ~ complex Gaussian in C^{K_b}                     # per event, host generator (seeded)
+        O[t, s, j, e] = sum_l U[R_e, in_j(l)] sum_c w_e[c] A_j[l, c]   # one einsum
+        K(w) = 2^-(n-1) sum_delta (prod delta) (x)_j sum_e delta_e O[j, e]   # Glynn, operator-valued permanent
+        Q_t, sv = svd(stack of vec K(w));  r_t = #(sv > cut sv_max),  cut = tol / 8 in [8 eps, 1e3 eps]
+        until r_t + p <= s or r_t = cap_t, doubling s
+    # core: J_t = Q C Q^dag, C [r, r] from a^2 pairing applies
+    per group of equal r:  a = ceil(2 r / D);  Y = Gaussian [D, a], or Y = 1 (matrix units) if a >= D
+        Big[(i,u),(j,v)] = <u| E_t(y_i y_j^dag) |v>            # pairing_apply on the a^2 inputs, with certificates c
+        A[(i,u), q] = (Q_q y_i)_u;  A = Qa Ra (thin QR)
+        C = Ra^-1 (Qa^dag Big Qa) Ra^-dag, Hermitised;  residual = |Big - P_A Big P_A|_F
+        err = (|c|_2 + residual) / sigma_min(A)^2              # Frobenius error of J_t
+        lam, V = eigh(C); keep lam > rtol^2 lam_max and lam > err / sqrt(r)  (unresolved part added to err)
+        K_t = sqrt(lam_i) Q V_i;  cert_t = err / D
+    outcomes with cert_t > tol: again with Q = 1 (r = D^2, Y = 1: C = J_t from the matrix units)
+    still above tol: failed -> route F for those outcomes (or ValueError when F exceeds max_bytes)
+```
+
+- **The range cut follows tol, not rtol.** A direction
+  dropped from the range at relative size c moves J_t by about c (its cross terms with the kept part), not c², so
+  the range is cut at tol / 8 (clamped to [8 ε, 1e3 ε]); rtol acts only at the eigenvalue step, as in F's
+  compression. With rtol in the cut (first version), weak internal modes sent every outcome to the matrix units
+  (k = 3, K = 3, rtol 1e-6: 3 640 applies against 3 584 for the matrix units); with the rounding floor 1e3 ε,
+  dropped directions at ~2·10⁻¹³ still exceeded tol through the residual; with tol / 8: 1 915 applies, the residual at
+  rounding level, the remaining retries from the pairing estimate's conditioning (probes a = ⌈2r / D⌉; 3r / D and
+  4r / D cost more applies in total on every case measured).
+- **Exactness and the error estimate.** The range is exact up to the cut; an incomplete range leaves a residual (the
+  part of Big outside the sampled span), which enters the certificate and sends the outcome to the matrix units. The
+  certificate is an a-posteriori **estimate**, not a bound: a missed direction q of J_t
+  reaches the residual only through the random probe map, |P_A^⊥ M q|, which has no lower bound relative to its mass
+  (with the matrix units, Y = 1, the map is an isometry and the residual is exact). Measured margin (CPU, k = 2–3,
+  K = 3–8, generic and label-preserving emitters; the range samples projected off one eigen-direction of J_t, the
+  strongest, a middle and the weakest resolved one, missed eigenvalue 2·10⁻⁵ – 1 of the largest; 396 cases):
+  estimate / true error ≥ 0.58, median 3.5 — so a miss is detected once its error exceeds about 1.7 tol (the misses
+  measured had errors ≫ tol and were all sent to the matrix units). The rank cut on the core follows
+  `compress_by_outcome` (s_i = √λ_i above rtol s_max) and in addition drops eigenvalues at the core's error level (not
+  resolved; their norm is added to the estimate). The tolerance assumes fp64: a complex64 kernel falls back.
+- **Operators.** Same channel as F's compressed set, per outcome, within tol, but not the same operators (a unitary
+  mixing of each outcome's set). The count is F's Choi-rank count when the spectrum's gap at rtol is above the core's
+  absolute error (~10⁻¹⁵ λ_max; generic and low-rank emitters, every case measured). On a spread spectrum R returns
+  fewer operators within tol: eigenvalues under that level are not resolved and are dropped (their norm enters the
+  estimate). Weak internal modes (modes 2–4 scaled 10⁻⁴, 10⁻⁷, 10⁻⁹), rtol 1e-12: R 37 / 192 / 42 against F 68 / 671 / 84
+  operators (k = 2 K = 3, k = 3 K = 3, k = 2 K = 4), |J_R − J_F| / χ ≤ 1.1·10⁻¹⁵; at rtol 1e-6 the counts are
+  equal. The rounding of Q itself (the SVD of the samples) and of the reconstruction Q V √λ enters the estimate as
+  c ε √r ‖C‖_F (~10⁻¹⁶ on J / D, but at D = 2 as large as the rest: without it, validation run 20261020_213551 measured 5.3·10⁻¹⁶ against an estimate of 4.6·10⁻¹⁶ on the H100 host's CPU). Deterministic for a given seed and
+  `chunk_bytes` (the chunking orders the random draws; CPU and CUDA draw the same samples). Both stages are chunked
+  over outcomes by `chunk_bytes` (the core per rank group); an outcome is processed whole.
+- **Dispatch.** `route="auto"` (with `compress`) takes F when the compressed fine set fits `max_bytes` (4 × S_fine D²
+  × 16 B), else R; R is not yet in the device cost model, and emitters of unequal spin dimension take F.
+- **Validation** (tests/sequence/test_internal_modes_route_r.py), against F's compression, two bins: Choi matrices
+  per outcome < 10⁻¹⁴ (measured ≤ 2.6·10⁻¹⁶ / D) with equal operator counts per outcome (k = 1–3, K = 3, 4, 8, generic
+  and label-preserving emitters A[l, k] = f_l(k) |l⟩⟨l|, bunched outcomes); every certificate ≥ the measured error and
+  < 10⁻¹⁴ (measured ≤ 5·10⁻¹⁵); label-preserving k = 2, K = 8: 64 fine operators, rank 4 per collision-free outcome;
+  F_t in closed form equals the fine stage's counts; range samples confined to one direction, or projected off the
+  weakest eigen-direction (k = 3, missed eigenvalue < 10⁻² of the largest; estimate ≥ ½ the true error): the
+  residual sends the outcomes to the matrix units, channel still F's; a one-outcome chunk budget keeps the channel
+  and the counts; weak internal modes (k = 3, K = 3, rtol 1e-6 and 1e-12): no failure, the estimate ≥ |J_R − J_F| / χ
+  per outcome, at most F's count (equal at 1e-6), fewer pairing applies than the matrix units; U = 1: unreachable patterns get no operator, as in F; `tol = 0`:
+  F's compressed set exactly, raises with F over `max_bytes`; auto takes R when F does not fit; CUDA against CPU
+  (gpu-marked).
+- **Timing** (CPU, Mac, 2026-10-20, build + compression, uncached, one run each, range cut at tol / 8): k = 3,
+  K = 8, label-preserving: R 0.03 s, F 0.09 s (448 operators); k = 4, K = 2 generic: R 2.8 s, F 0.08 s (3 876
+  operators: full rank, F wins at small K_b, as designed); k = 4, K = 3 label-preserving: R 1.7 s, F 0.70 s; k = 4,
+  K = 8 label-preserving: R 1.8 s (5 280 operators), F would need 12.6 GB (4 × S_fine D² × 16 B, S_fine = 766 480).
+- **H100 PCIe** (run 20261020_214216; validation run 20261020_214121: the 66 internal-mode tests pass on the GPU; kept CSV
+  `results/keep/internal_modes_bench_r_20261020_h100.csv`). Compressed channel at rtol 1e-12, uncached, median of 3
+  (2 at k = 5), F = build + compression of the fine set (`--max-gb 60`), R = route R; operators per tick in brackets
+  (equal for F and R on every row where both ran):
+
+  | k | K | generic: F / R | label-preserving: F / R |
+  |---|---|---|---|
+  | 2 | 3 | 2.6 / 7.4 ms (78) | 2.7 / 4.8 ms (40) |
+  | 2 | 8 | 12 / 6.2 ms (160) | 9.8 / 4.9 ms (40) |
+  | 3 | 3 | 68 / 242 ms (1 140) | 89 / 61 ms (442) |
+  | 3 | 8 | 211 / 613 ms (3 560) | 145 / 59 ms (448) |
+  | 4 | 3 | 1.08 / 5.81 s (17 550) | 1.30 / 0.80 s (5 240) |
+  | 4 | 8 | 8.0 / 22.5 s (83 952) | 3.75 / 0.80 s (5 280) |
+  | 5 | 3 | — | 35.5 / 15.8 s (63 904) |
+  | 5 | 8 | — | F over 60 GB / 17.2 s (64 064) |
+
+  |J_R − J_F| / χ ≤ 1.4·10⁻¹⁵ per outcome on every compared row (two rows, generic k = 4 K = 8 and label k = 5 K = 3,
+  not compared: the bench's own superoperator check ran out of GPU memory). At full Choi rank (generic emitters) F
+  is 2–5× faster from k = 3, as designed; at low Choi rank R is 1.5–4.7× faster from k = 3 and reaches k = 5, K = 8,
+  where the fine set does not fit. `route="auto"` keeps F whenever the compressed fine set fits: R's cost follows the
+  Choi rank, which is known only after its range step, so no a-priori `COST` term would choose it over a fitting F
+  except by guessing the rank (a cheap rank probe is a possible later step).

@@ -35,6 +35,13 @@ from .circuit import TimeLoopCircuit
 from .kernel import LoopRegisterKernel, PeriodicNetworkKernel
 
 
+def _reject_internal_modes(emitters):
+    """The loop engines carry one internal mode per photon: an emitter with internal modes is refused, not truncated."""
+    from ..sequence import ModeBinEmitter
+    if any(isinstance(e, ModeBinEmitter) for e in emitters):
+        raise NotImplementedError("internal modes: not supported through loops")
+
+
 def bs_matrix(theta, phi) -> torch.Tensor:
     """G(theta, phi) [..., 2, 2] = exp(-i theta [[0, e^{-i phi}], [e^{i phi}, 0]]) — the TimeLoopCircuit convention."""
     th = torch.as_tensor(theta, dtype=torch.float64)
@@ -105,6 +112,7 @@ class HybridRegisterKernel(PeriodicNetworkKernel):
         start of each tick (before the emissions). mixer: "after" (loops, then U) or "before" (U, then loops).
         """
         self.emitters = list(emitters)
+        _reject_internal_modes(self.emitters)
         m = int(rails)
         if T is None:
             if self.emitters:

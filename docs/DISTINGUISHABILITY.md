@@ -221,9 +221,8 @@ Feed-forward (`policy`) and hooks: unchanged, they act on `psi` and `counts`.
 
 ### 3.5 Spin-optical stages
 
-Stage-level distinguishability for spin-optical processors lives in the
-separate spin-register package, built on `EmitterSLOSKernel` (`kraus(indist=)`) and the generic
-layers here.
+Stage-level distinguishability for spin-optical processors belongs to downstream simulators,
+built on `EmitterSLOSKernel` (`kraus(indist=)`) and the generic layers here.
 
 ### 3.6 Time loops — `LoopRegisterKernel`, `PeriodicNetworkKernel`, `TimeLoopModule`, MerLin
 
@@ -394,7 +393,7 @@ documented in SEQUENCE.md §13 / TIME_LOOP.md §6). The time-loop strong side to
     `kraus`, refinement map through `transfer` / `bin_marginals` / `sequence_probability` / `joint`
     / `sample`; `sample_diag` with per-tick OBB draws (good-only Laplace). Tests: channel trace,
     vs the strong side, `x_a = 1` identity, two-dot HOM in one bin.
-12. Spin-optical stages: moved out with the separate spin-register package (§3.5).
+12. Spin-optical stages: downstream, not in this package (§3.5).
 13. `LoopRegisterKernel` / `PeriodicNetworkKernel`: `sample(indist=)` with one-photon bad
     registers; `bin_marginals(indist=, mc_shots=)` Monte Carlo first; the density-matrix injection
     channel only if a trainable path is wanted. Test vs `circuit.py` unrolled on a two-species

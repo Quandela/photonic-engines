@@ -91,6 +91,7 @@ def sample_torch(state: EmitterMPS, U: torch.Tensor, shots: int,
     the caller (`emitter_sample`), not here.
     """
     import time
+    state.require_uniform_labels("emitter sampler (torch)")
     dev = torch.device(device)
     U = torch.as_tensor(U).to(dev, dtype)
     m, n, L, chi = U.shape[0], state.n, state.num_labels, state.chi

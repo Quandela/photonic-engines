@@ -64,12 +64,16 @@ Every script that produced a measurement of the papers, or a check behind one. T
 | `gbskernels_bench.py` | GBSKernels' GPU GBS sampler against ours on identical instances. |
 | `hybrid_frontier.py` | Loop-interferometer frontier for the three single-rail inputs of the paper's part (b): the photon (or source) number N* at which the native register sampler sustains --target samples/s, as a curve N*(L) — the same method |
 | `hybrid_sector_speed.py` | Per-sample cost of the loop sampler on two paths, "default" and "fast", at fixed (N, L) and batch size; plus a two-sample law check of the two paths and a host-sync count per tick (2026-10-12). The CSV column `fast` is 0 |
+| `internal_modes_bench.py` | Internal photon modes (docs/SEQUENCE.md §14): cost of one bin's channel on the populated internal span (route F of `slos.internal`) and of its outcome law by route F and by the pairing route P', against the expanded cons |
+| `internal_modes_ccspin_bench.py` | Internal photon modes, the weak route (docs/SEQUENCE.md §14, steps 6b-6d): time of one `sample_apply` tick (CC-spin, operator-valued Clifford-Clifford) for k emitters with qubit spins, L = 2 labels (dual rail, m = 2k), K |
+| `internal_modes_regression.py` | Internal photon modes, regression bench over the tick shapes of a spin-photon processor (docs/SEQUENCE.md §14; design note §6a (3)): the route the dispatcher picks must not be slower than today's expanded construction on |
 | `loss_cliff.py` | Diagnostic for the lossy Fock sampler cliffs seen in run 20260917_182540: 1.08 -> 0.007 samples/s between n = 50 and 51 at eta = 0.7 (m = 100 -> 102) and 1.01 -> 0.24 between n = 64 and 65 at eta = 0.5 (m = 128 -> 130),  |
 | `loss_unravel_check.py` | GPU check of the label unravelling of the lossy emitter sampler (docs/LOSS.md §3b): for a few n and eta, sample with `unravel=True` (labels drawn, one term per gap) and `unravel=False` (traced gap terms), compare the det |
 | `map_threshold.py` | Map the simulability frontier n*(m/n) for the Fock, emitter (caterpillar) and superposition samplers: run find_threshold.py per (engine, ratio), collect n*, rho_eff and the bracketing points, and write a table + CSV (+ a |
 | `memory_frontier.py` | Memory frontier of strong simulation: largest n whose full output distribution fits in a byte budget, per mode ratio c = m/n. Pure counting - no benchmark. |
 | `merge_frontier.py` | Merge frontier CSVs from several map_threshold.py runs into one, for plot_frontier.py. |
 | `methods_cpu_checks.py` | CPU checks of the chain-rule samplers, printed with their values. Each mirrors a test that asserts it (named below); this script prints the numbers the tests only bound. CPU, about a minute. Needs tests/ on disk: it impo |
+| `mu_lane_error.py` | True fp64 error of the templated mu lane (clifford/cuda_rect.py, CPU emulation) against an EXACT reference, on the cases of tests/clifford/test_cuda_rect.py (test_templated_mu_lane_every_degree and, with --high, test_tem |
 | `multigpu_scaling.py` | Multi-GPU scaling of the production Fock sampler, MEASURED. |
 | `nlbs_cost_law.py` | The cost law of the non-linear sampler (docs/NONLINEAR.md §5b), recomputed from the frontier scans. |
 | `nlbs_frontier.py` | The simulability frontier of non-linear boson sampling n*(phi, L, m/n, eta, x): for each setting, run find_threshold.py --engine nlbs and collect the photon number at which the exact rejection sampler drops to --target s |
@@ -110,6 +114,8 @@ Every script that produced a measurement of the papers, or a check behind one. T
 | `sequence_precision.py` | Rounding error of the label-amplitude passes of the sequence kernel at k = 16-20 (Supplement C; cross-engine review item #4, docs/SEQUENCE.md §12c). |
 | `sequence_ticks.py` | Complexity of the spin register of a static k-emitter machine, tick by tick (docs/SEQUENCE.md §9): k dual-rail emitters into one m = 2k-mode interferometer with no delay line, sampled by pure trajectories with the label- |
 | `soret_energy_crossing.py` | Energetic crossing of Soret et al. (arXiv:2601.08068v1) recomputed on their own metric M. |
+| `stage_bench.py` | Timing of the stage kernel (`slos.stage.StageKernel`, docs/DESIGN.md §2.4): Kraus operators of an emitter chain next to a batch of Fock inputs, per input and output pattern, on one device. |
+| `stage_carry_bench.py` | Timing of partial detection in the stage kernel (`slos.stage.StageKernel.apply`, route B, docs/DESIGN.md §2.4): the blockwise update of a carried-photon density matrix by an emitter chain, on one device. |
 | `table_lookup_rate.py` | Sample rate from a stored output distribution (strong simulation below the memory frontier): exact samples by lookup. |
 | `theboss_tvd.py` | theboss against this engine at the DISTRIBUTION level: the paper's third-party correctness line. |
 | `theboss_workcount.py` | theboss against this engine, counted rather than timed: Guan-code addends per exact sample. |

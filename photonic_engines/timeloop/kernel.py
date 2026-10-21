@@ -627,6 +627,10 @@ class LoopRegisterKernel(PeriodicNetworkKernel):
         bpp = 1
         em = None
         if emitter is not None:
+            from ..sequence import ModeBinEmitter
+            if isinstance(emitter, ModeBinEmitter):
+                raise NotImplementedError("internal modes: not supported through loops")
+            emitter.require_uniform_labels("LoopRegisterKernel(emitter=)")
             modes = np.asarray(emitter.modes, dtype=np.int64)                                # [n_em, Lab]
             if bins_per_period is None:
                 bins_per_period = max(1, int((modes.max(1) - modes.min(1)).max()) + 1)

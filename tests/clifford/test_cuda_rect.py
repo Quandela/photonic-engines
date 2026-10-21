@@ -141,9 +141,10 @@ def test_mu_form_matches_the_lambda_form(N, q, tpl, repeats, form):
 def _mu_lane_atol(N, D, scale):
     """fp64 error bound of the mu lane, absolute: c N (D + 1) eps max|P|. One Glynn term carries N columns times D + 1
     polynomial coefficients through its prefix/suffix products; c = 4 covers complex arithmetic and the reference
-    itself (on hosts where long double is double, e.g. arm64, the reference is a second fp64 run). Measured against an
-    exact integer-DP reference on every case of test_templated_mu_lane_every_degree, FMA contraction on and off:
-    max|err| / (N (D + 1) eps max|P|) <= 1.22 (worst N = 18, D = 4; the N = 23, D = 6 case is 2.1e-14 relative)."""
+    itself (on hosts where long double is double, e.g. arm64, the reference is a second fp64 run). Measured by
+    bench/mu_lane_error.py (exact integer-DP reference, every case of test_templated_mu_lane_every_degree, with and
+    without --nofma): max|err| / (N (D + 1) eps max|P|) <= 1.22 (worst N = 18, D = 4; the N = 23, D = 6 case is
+    2.1e-14 relative)."""
     return 4 * N * (D + 1) * 2.0 ** -53 * scale
 
 
@@ -183,7 +184,7 @@ def test_templated_mu_lane_high_degrees(N, q, tpls, repeats):
     """The templated mu lane at D = s0 = 7 .. 24 (beyond the generic lane's DMAX; the 10-05 / 10-06 extensions, runs
     20261005_222151 / 20261006_120404) against its own long-double build, the long-double lambda-form and the torch
     cofactors; TPL 1 to 16, repeated rows, one and many segments. The fixed 2e-14 below is tighter than _mu_lane_atol
-    here (small q): measured against an exact reference, max|err| / max|P| <= 6.6e-15 on these cases."""
+    here (small q): max|err| / max|P| <= 6.6e-15 on these cases (bench/mu_lane_error.py --high)."""
     rng = np.random.default_rng(N * 37 + q)
     U = haar_unitary(2 * N, seed=5 * N + q)
     S = 2

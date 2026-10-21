@@ -239,7 +239,7 @@ def _row_fold_ops(state, U: np.ndarray, slot: int, row: int) -> np.ndarray:
     """G_slot(row) = sum_l U[row, modes[slot][l]] M_{slot, l} — the operator of a distinguishable
     photon of the chain detected in output row `row` (docs/DISTINGUISHABILITY.md §2).
     """
-    return sum(U[row, state.modes[slot][l]] * state.ops[slot, l] for l in range(state.num_labels))
+    return sum(U[row, state.modes[slot][l]] * state.ops[slot, l] for l in range(len(state.modes[slot])))
 
 
 def emitter_x_mixture(kernel, U: torch.Tensor, indist, order: int | None = None, kraus: bool = False):

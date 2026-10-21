@@ -238,6 +238,7 @@ def sample_caterpillar(state: EmitterMPS, U: torch.Tensor, shots: int, generator
     = surviving emission slots per stream, see there).
     """
     import time
+    state.require_uniform_labels("emitter sampler (segments)")
     dev = torch.device(device)
     G = caterpillar_gates(state)
     if G is None:

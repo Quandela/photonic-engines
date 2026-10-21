@@ -83,6 +83,7 @@ class EmitterGurvitsEstimator:
                  dtype: torch.dtype = C128, seed: int | None = None):
         if sampling not in ("gaussian", "rademacher"):
             raise ValueError("sampling must be 'gaussian' or 'rademacher'")
+        state.require_uniform_labels("EmitterGurvitsEstimator")
         self.state, self.sampling = state, sampling
         self.n, self.m, self.L, self.chi = state.n, state.m, state.num_labels, state.chi
         self.device = torch.device(device)

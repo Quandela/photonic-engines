@@ -86,6 +86,7 @@ class BinEmitter:
         """An EmitterMPS written on the unrolled (mode, bin) slots, modes[b][l] = b*m + mode_l,
         i.e. the same spatial modes at every bin.
         """
+        state.require_uniform_labels("BinEmitter.from_mps / SequenceKernel")
         modes0 = tuple(x % m for x in state.modes[0])
         for b, mb in enumerate(state.modes):
             if tuple(x - b * m for x in mb) != modes0 or any(x // m != b for x in mb):
@@ -100,6 +101,87 @@ class BinEmitter:
         return BinEmitter(st.ops, tuple(modes), st.s0, st.final)
 
 
+@dataclass(frozen=True)
+class ModeBinEmitter:
+    """An emitter whose photons carry an internal (temporal / frequency) mode index k on which the interferometer acts
+    as the identity and which the detectors do not resolve (docs/SEQUENCE.md "Internal modes"): ops[b, l, k] (d x d)
+    is applied at bin b when the photon leaves with label l in internal mode k, so the emitted state is
+    sum_{l,k} ops[b, l, k] |s> (x) b^dag_{modes[l], k} |0>. The K internal modes are a basis shared by every emitter
+    of a kernel (an emitter with fewer modes uses the first ones). ops [n, L, K, R, d, d]: R unobserved emission
+    outcomes r (the spin's environment, e.g. a spin flip after the emission), ops[b, l, k, r] applied with outcome r;
+    the channel is the sum over r (different r never interfere with each other: they are orthogonal environment
+    states, not photon modes). `lost` [n, Q, d, d]: Kraus operators of an emission that never reaches the network;
+    completeness sum_{l,k,r} A^dag A + sum_q N^dag N = 1. Build it with `bin_emitter`, which returns a plain
+    `BinEmitter` when K = 1 (and R = 1, no `lost`).
+    """
+    ops: np.ndarray                      # [n, L, K, d, d] or [n, L, K, R, d, d]
+    modes: tuple[int, ...]               # [L]
+    s0: np.ndarray                       # [d]
+    final: np.ndarray | None = None      # [d] or None (traced)
+    lost: np.ndarray | None = None       # [n, Q, d, d] or None
+
+    def __post_init__(self):
+        ops = np.asarray(self.ops, dtype=np.complex128)
+        if ops.ndim not in (5, 6) or ops.shape[-2] != ops.shape[-1]:
+            raise ValueError("ops must have shape [n, L, K, d, d] or [n, L, K, R, d, d]")
+        modes = tuple(int(x) for x in self.modes)
+        if len(modes) != ops.shape[1] or len(set(modes)) != len(modes):
+            raise ValueError("modes must list one distinct input mode per label")
+        s0 = np.asarray(self.s0, dtype=np.complex128).reshape(-1)
+        if s0.shape[0] != ops.shape[-1]:
+            raise ValueError("s0 must have the spin dimension d of ops")
+        final = None if self.final is None else np.asarray(self.final, dtype=np.complex128).reshape(-1)
+        lost = None
+        if self.lost is not None:
+            lost = np.asarray(self.lost, dtype=np.complex128)
+            if lost.ndim != 4 or lost.shape[0] != ops.shape[0] or lost.shape[2:] != ops.shape[-2:]:
+                raise ValueError("lost must have shape [n, Q, d, d]")
+        object.__setattr__(self, "ops", ops)
+        object.__setattr__(self, "modes", modes)
+        object.__setattr__(self, "s0", s0)
+        object.__setattr__(self, "final", final)
+        object.__setattr__(self, "lost", lost)
+
+    @property
+    def n(self) -> int:
+        """Number of bins, i.e. of emissions."""
+        return self.ops.shape[0]
+
+    @property
+    def K(self) -> int:
+        """Number of internal modes."""
+        return self.ops.shape[2]
+
+    @property
+    def d(self) -> int:
+        """Spin dimension of this emitter."""
+        return self.ops.shape[-1]
+
+    @property
+    def R(self) -> int:
+        """Number of unobserved emission outcomes (1 for ops [n, L, K, d, d])."""
+        return self.ops.shape[3] if self.ops.ndim == 6 else 1
+
+    def ops_r(self, r: int) -> np.ndarray:
+        """The operators of outcome r, [n, L, K, d, d] (the whole ops when R = 1)."""
+        return self.ops[:, :, :, r] if self.ops.ndim == 6 else self.ops
+
+
+def bin_emitter(ops, modes, s0, final=None, lost=None) -> BinEmitter | ModeBinEmitter:
+    """An emitter from ops [n, L, d, d] or [n, L, K, d, d]: a plain `BinEmitter` when there is one internal mode and no
+    `lost` operators ([n, L, 1, d, d] is reduced to its [:, :, 0] slice, a value copy), a `ModeBinEmitter` otherwise.
+    A one-mode problem therefore runs today's code path unchanged.
+    """
+    ops = np.asarray(ops)
+    if ops.ndim == 5 and ops.shape[2] == 1 and lost is None:
+        ops = ops[:, :, 0].copy()
+    if ops.ndim == 4:
+        if lost is None:
+            return BinEmitter(ops, modes, s0, final)
+        ops = ops[:, :, None]
+    return ModeBinEmitter(ops, modes, s0, final, lost)
+
+
 def _embed(op: np.ndarray, i: int, dims: Sequence[int]) -> np.ndarray:
     out = np.ones((1, 1), dtype=complex)
     for j, d in enumerate(dims):
@@ -109,6 +191,16 @@ def _embed(op: np.ndarray, i: int, dims: Sequence[int]) -> np.ndarray:
 
 class SequenceKernel:
     """k emitters x n bins through one static m-mode interferometer (or one unitary per bin)."""
+
+    def __new__(cls, emitters=(), *args, **kwargs):
+        """Emitters with internal modes (`ModeBinEmitter`) get the `ModeSequenceKernel` subclass; everything else is
+        this class, unchanged (the dispatch happens once, at construction).
+        """
+        if cls is SequenceKernel and isinstance(emitters, Sequence) and \
+                any(isinstance(e, ModeBinEmitter) for e in emitters):
+            from .sequence_modes import ModeSequenceKernel
+            return object.__new__(ModeSequenceKernel)
+        return object.__new__(cls)
 
     def __init__(self, emitters: Sequence[BinEmitter], m: int, device: str = "cpu", dtype: torch.dtype = C128,
                  mask: str = Mask.FOCK.value, indist=None, order: int | None = None):
@@ -123,6 +215,8 @@ class SequenceKernel:
         distinguishable photons per bin (`imperfections.truncation_bound` with n = k).
         """
         self.emitters = list(emitters)
+        if type(self) is SequenceKernel and any(isinstance(e, ModeBinEmitter) for e in self.emitters):
+            raise TypeError("emitters with internal modes: pass them as a list or tuple")
         if not self.emitters:
             raise ValueError("at least one emitter")
         self.k, self.m = len(self.emitters), int(m)
@@ -777,7 +871,7 @@ class SequenceKernel:
                     U_streams: torch.Tensor | None = None, backend: str = "triton") -> torch.Tensor:
         """One exact k-photon output pattern per stream, for single photons entering the input modes cols.
 
-        Public API (used by applications built on the sequence engine, e.g. a spin-register machine that draws
+        Public API (used by applications built on the sequence engine, e.g. a spin-photon processor simulator that draws
         the photon pattern of a tick and then conditions its own register on it).
 
         Args:
@@ -1004,4 +1098,4 @@ class SequenceKernel:
                 f"S_bin={self.S})")
 
 
-__all__ = ["BinEmitter", "SequenceKernel"]
+__all__ = ["BinEmitter", "ModeBinEmitter", "SequenceKernel", "bin_emitter"]

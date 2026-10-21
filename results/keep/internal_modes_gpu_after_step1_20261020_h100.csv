@@ -1,0 +1,17 @@
+point,metric,before_median,after_median,ratio,before_spread,after_spread,pass_
+loop_emitter_L6,samples_per_s,1.0012118097794769,1.0067728136316725,1.0055542731296991,0.2,0.4,True
+loop_emitter_L10,samples_per_s,1.0061433215392541,1.0023584043629719,0.996238192814825,2.5,1.7,True
+loop_k2_L1,samples_per_s,1.0061819100931964,1.0029155365741467,0.996753694847538,0.1,0.9,True
+loop_k3_L1,samples_per_s,1.003114404941312,1.0080151695013932,1.00488554898219,0.7,0.4,True
+loop_fock_chain_L12,samples_per_s,1.928956130629925,1.9115606495418402,0.9909819198001129,1.7,2.0,True
+train_k16,ms_per_tick_shot_median_ticks2-20,1.2411,1.2392,0.9984690999919427,1.2,1.4,True
+train_k18,ms_per_tick_shot_median_ticks2-20,7.6646,7.6637,0.9998825770425072,0.6,0.5,True
+sequence_frontier_k4,kraus_s,0.228,0.227,0.9956140350877193,1.3,1.8,True
+sequence_frontier_k4,marginals_s,0.022,0.022,1.0,0.0,0.0,True
+sequence_frontier_k4,ms_per_bin_shot,0.01051,0.0104,0.9895337773549,17.2,11.2,True
+sequence_frontier_k5,kraus_s,0.021,0.021,1.0,0.0,0.0,True
+sequence_frontier_k5,marginals_s,0.011,0.011,1.0,0.0,0.0,True
+sequence_frontier_k5,ms_per_bin_shot,0.05922,0.05861,0.9896994258696387,2.0,0.6,True
+sequence_frontier_k6,kraus_s,0.054,0.054,1.0,1.9,0.0,True
+sequence_frontier_k6,marginals_s,0.155,0.155,1.0,0.0,0.0,True
+sequence_frontier_k6,ms_per_bin_shot,0.34265,0.34165,0.997081570115278,0.5,1.0,True

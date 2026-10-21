@@ -24,9 +24,9 @@ from __future__ import annotations
 from importlib import import_module
 
 from .masks import Mask, graded_state_space_size, state_space_size
-from .states import EmitterMPS, FockState, FockSuperposition, GaussianInput, ProductSuperposition, spin_gate
+from .states import EmitterMPS, FockState, FockSuperposition, GaussianInput, ProductSuperposition, StageChain, spin_gate
 
-__version__ = "0.0.1"
+__version__ = "0.2.0"
 
 __all__ = [
     "EmitterMPS",
@@ -35,6 +35,7 @@ __all__ = [
     "GaussianInput",
     "Mask",
     "ProductSuperposition",
+    "StageChain",
     "adapters",
     "adaptive",
     "clifford",

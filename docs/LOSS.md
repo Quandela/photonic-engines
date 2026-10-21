@@ -146,8 +146,8 @@ marginals / mean; `patterns` / `distribution` readouts stay pure-state).
 
 ## 5. Spin-optical stages
 
-Stage-level loss for spin-optical processors lives in the separate
-spin-register package, built on `EmitterSLOSKernel` and the generic loss layer here.
+Stage-level loss for spin-optical processors belongs to downstream simulators, built on
+`EmitterSLOSKernel` and the generic loss layer here.
 
 ## 5b. Loss on a partially excited source (2026-09-20)
 
@@ -238,7 +238,7 @@ not on the photons), multi-photon emission, and any mode-dependent loss on the
 generic engines (would need auxiliary modes or per-mode Kraus maps in the SLOS recurrence; the
 time-loop engine has the latter for its loops and detector). Dark counts are a separate
 output-side layer, `imperfections.py` (DARK COUNTS: `add_dark_counts`, `dark_distribution`,
-`dark_predecessors`), used by the separate spin-register package. Partial distinguishability is the
+`dark_predecessors`), used by downstream spin-photon simulators. Partial distinguishability is the
 second imperfection axis and has its own note, `docs/DISTINGUISHABILITY.md`: the samplers take
 `indist=x` next to `loss=η` — one draw covers both (`imperfections.partition`), and the cost law
 is this section's with η → ηx.

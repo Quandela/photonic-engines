@@ -42,8 +42,8 @@ states.py  masks.py  imperfections.py   shared vocabulary: input types, output s
                 +-- adapters/          bridges out: perceval, merlin
 ```
 
-The spin-register machine is a separate package, `spin-register`, built on photonic-engines: it consumes
-`sequence.py`, `slos.EmitterSLOSKernel` and `imperfections.py` and is not imported from here.
+Spin-photon processor simulators are built downstream, on `sequence.py`, `slos.EmitterSLOSKernel`,
+`slos.StageKernel` and `imperfections.py`; none is imported from here.
 
 `photonic_engines/__init__.py` re-exports the shared vocabulary eagerly and the engine
 modules (`slos`, `clifford`, `gaussian`, `timeloop`, `sequence`, `adaptive`, `nonlinear`) and `adapters` lazily through a module-level `__getattr__`. That laziness is deliberate and load
@@ -112,6 +112,11 @@ Fock basis instead of by evaluating one permanent per output.
   `adapters/merlin.py` and `timeloop/module.py` train through these kernels.
 * `emitter.py` carries the emitter bond index through the same recurrence (`EmitterSLOSKernel`),
   and exposes `kraus()` — the per-outcome register operators that `sequence.py` consumes.
+* `stage.py` is one stage of a hybrid spin-photon program (`StageKernel`; the chain is `states.StageChain`): an emitter
+  chain applied on top of a batch of Fock inputs (heralded or carried photons) on one layered basis —
+  the Fock prefix as `FockSLOSKernel`'s step, then the chain as `EmitterSLOSKernel`'s step — with
+  ragged labels, partial detection (`detected=`, carried-out basis) and graded photon numbers; a
+  single-photon chain with no Fock input forwards to `EmitterSLOSKernel` unchanged.
 * `species.py` is the strong side of partial distinguishability (`docs/DISTINGUISHABILITY.md`):
   a species partition of the input on the same layered basis — the SLOS recurrence stopped on an
   intermediate layer for an interfering species, a probability-level `classical_raise` along the

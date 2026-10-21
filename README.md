@@ -82,8 +82,6 @@ roadmap), `docs/HARDWARE_TARGET.md` (where lossy photonic devices sit against th
 `docs/GAUSSIAN_SURVEY.md` (exact GBS algorithms and codes surveyed), `docs/MEMORY_FRONTIER.md`, `docs/DISTRIBUTED.md`
 (experimental MPI engine).
 
-The spin-register machine is a separate package, `spin-register`, built on photonic-engines.
-
 ## Reproducing the results
 
 `reproduce/` holds one script per table and figure of the papers that use this code; `reproduce/MANIFEST.md` lists

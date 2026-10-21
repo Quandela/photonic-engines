@@ -16,6 +16,8 @@ Five kinds of input over m modes (n photons, except where the photon number is i
                          |psi> = sum_x  <f| M^(n)_{x_n} ... M^(1)_{x_1} |s0>  |x_1 ... x_n>
 
                      x_k in {0..L-1} selects the mode receiving photon k (modes[k][x_k]).
+                     Events may have different label counts L_k (a ragged chain: a d = 1
+                     source next to a spin on a product register): `EmitterMPS.ragged`.
                      This is a matrix product state of bond dimension chi; caterpillar graph
                      states (Nature Comm. 16, 2025, s41467-025-59693-3) are the chi = 2, L = 2
                      case with M_R = |up><up| U_k, M_L = |down><down| U_k.  The final spin is
@@ -309,6 +311,11 @@ class EmitterMPS:
     s0     : initial emitter vector [chi]
     final  : final emitter vector [chi] (projection), or None to trace the emitter out
     m      : number of interferometer modes (>= max mode index + 1)
+
+    Ragged chains: event k may have L_k = len(modes[k]) labels, 1 <= L_k <= L; ops keeps its shape
+    [n, L, chi, chi] with L = max_k L_k and the padded slots ops[k, L_k:] exactly zero (checked).
+    `labels`, `is_ragged`, `modes_padded()`, `label_mask()` describe it; `EmitterMPS.ragged` builds
+    one from per-event operator lists. A uniform chain (every L_k = L) is today's object.
     """
     ops: np.ndarray
     modes: tuple[tuple[int, ...], ...]
@@ -322,8 +329,12 @@ class EmitterMPS:
             raise ValueError("ops must have shape [n, L, chi, chi]")
         n, L, chi, _ = ops.shape
         modes = tuple(tuple(int(x) for x in mk) for mk in self.modes)
-        if len(modes) != n or any(len(mk) != L for mk in modes):
-            raise ValueError("modes must have shape [n][L]")
+        if len(modes) != n or any(not 1 <= len(mk) <= L for mk in modes):
+            raise ValueError("modes must have shape [n][L_k] with 1 <= L_k <= L")
+        for k, mk in enumerate(modes):
+            for l in range(len(mk), L):
+                if np.any(ops[k, l]):
+                    raise ValueError(f"ops[{k}, {l}] must be zero: event {k} has {len(mk)} labels (no mode to emit into)")
         flat = [x for mk in modes for x in mk]
         if len(set(flat)) != len(flat):
             raise ValueError("every (event, label) must use a distinct input mode")
@@ -347,8 +358,36 @@ class EmitterMPS:
 
     @property
     def num_labels(self) -> int:
-        """Number L of labels (candidate modes) per emission event."""
+        """Number L of labels (candidate modes) per emission event; L = max_k L_k of a ragged chain."""
         return self.ops.shape[1]
+
+    @property
+    def labels(self) -> tuple[int, ...]:
+        """Per-event label counts (L_0 .. L_{n-1}), L_k = len(modes[k])."""
+        return tuple(len(mk) for mk in self.modes)
+
+    @property
+    def is_ragged(self) -> bool:
+        """Whether some event has fewer than `num_labels` labels."""
+        return any(len(mk) < self.num_labels for mk in self.modes)
+
+    def modes_padded(self) -> np.ndarray:
+        """Input modes as an int64 array [n, L]; a padded slot repeats modes[k][0] (its operator is zero).
+        A consumer that reads labels (not only weights) must mask the padded slots with `label_mask()`.
+        """
+        L = self.num_labels
+        return np.array([list(mk) + [mk[0]] * (L - len(mk)) for mk in self.modes], dtype=np.int64)
+
+    def label_mask(self) -> np.ndarray:
+        """Boolean mask [n, L]: True on the real labels, False on the padded slots."""
+        return np.arange(self.num_labels)[None, :] < np.array(self.labels)[:, None]
+
+    def require_uniform_labels(self, where: str):
+        """Raise NotImplementedError for a ragged chain in a code path that needs L labels per event."""
+        if self.is_ragged:
+            raise NotImplementedError(
+                f"ragged label counts (EmitterMPS.labels = {self.labels}): strong kernel only — EmitterSLOSKernel; "
+                f"not yet in {where}")
 
     @property
     def chi(self) -> int:
@@ -368,6 +407,7 @@ class EmitterMPS:
         the chain is None when every slot is folded. Two uses: a lost photon whose label x was
         drawn (`folds[j] = ops[j, x]`, docs/LOSS.md §3b) and a distinguishable photon whose output
         row r was drawn (`folds[j] = sum_l U[r, modes[j][l]] ops[j, l]`, docs/DISTINGUISHABILITY.md).
+        A ragged chain stays ragged: its zero padding slots stay zero, its kept events keep their labels.
         """
         n, chi = self.n, self.chi
         acc = np.eye(chi, dtype=np.complex128)
@@ -394,7 +434,7 @@ class EmitterMPS:
         out = []
         for f in finals:
             comps, amps = [], []
-            for x in product(range(self.num_labels), repeat=self.n):
+            for x in product(*(range(len(mk)) for mk in self.modes)):
                 v = self.s0
                 for k, lab in enumerate(x):
                     v = self.ops[k, lab] @ v
@@ -439,6 +479,244 @@ class EmitterMPS:
             ops[k, 1] = P_dn @ G
         return EmitterMPS(ops=ops, modes=tuple(tuple(mk) for mk in modes), s0=np.asarray(s0),
                           m=m, final=None if final is None else np.asarray(final))
+
+    @staticmethod
+    def ragged(ops: Sequence[np.ndarray], modes: Sequence[Sequence[int]], s0: Sequence[complex],
+               m: int | None = None, final: Sequence[complex] | None = None) -> EmitterMPS:
+        """A chain whose event k has its own number L_k of labels: ops[k] is [L_k, chi, chi], modes[k] has
+        L_k entries. Stored padded to L = max L_k with zero operators (see the class docstring); with equal
+        L_k it is the ordinary uniform chain. Typical use: a product register of sources of different
+        dimensions (a d = 1 single-photon source emits one label, a spin two).
+        """
+        ops = [np.asarray(o, dtype=np.complex128) for o in ops]
+        if not ops or any(o.ndim != 3 or o.shape[1:] != ops[0].shape[1:] for o in ops):
+            raise ValueError("ops[k] must be [L_k, chi, chi] with the same chi for every event")
+        if len(modes) != len(ops) or any(len(mk) != len(o) for mk, o in zip(modes, ops)):
+            raise ValueError("modes[k] must list one mode per label of ops[k]")
+        L, chi = max(len(o) for o in ops), ops[0].shape[1]
+        padded = np.zeros((len(ops), L, chi, chi), dtype=np.complex128)
+        for k, o in enumerate(ops):
+            padded[k, :len(o)] = o
+        if m is None:
+            m = max(x for mk in modes for x in mk) + 1
+        return EmitterMPS(ops=padded, modes=tuple(tuple(mk) for mk in modes), s0=np.asarray(s0), m=m,
+                          final=None if final is None else np.asarray(final))
+
+
+@dataclass(frozen=True)
+class StageChain:
+    """One stage's emitter chain in the event model of a stage simulator (`slos.stage.StageKernel`).
+
+    ops         : complex array [n, L, chi, chi]; event k has L_k labels (ragged as in `EmitterMPS`: the
+                  padded slots ops[k, L_k:] exactly zero)
+    event_modes : event_modes[k] = the modes P_k of event k, distinct within and across events
+    words       : words[k] int [L_k, |P_k|] >= 0, the Fock word label l of event k emits into P_k; None = one
+                  photon per label into its own mode (words[k] = identity, L_k = |P_k|)
+    s0, final, m: as in `EmitterMPS`
+    env         : env[k] int [L_k] >= 0, the environment record of each label (None = all 0)
+
+    Event k acts as E_k = sum_l M_{k,l} (x) prod_p (a_p^dag)^{w_p} / sqrt(w_p!): labels are coherent branches, so
+    labels with the same (word, env) add. A word may hold any number of photons: |w| = 0 is a photon-less emission
+    outcome (the emitter applies M_{k,l} and no photon enters the network: internal modes' `lost` operator), |w| >= 2
+    a multiphoton emission. Labels with different `env` are orthogonal records of the emitter's environment and never
+    interfere: the stage's channel is the sum over the env words (one env value per event) of the coherent chains
+    (an unobserved emission outcome r, or one `lost` operator each, as `from_bin_emitters` builds). n = 0 events
+    (`StageChain.empty`) is a photons-only stage.
+    """
+    ops: np.ndarray
+    event_modes: tuple[tuple[int, ...], ...]
+    s0: np.ndarray
+    m: int
+    final: np.ndarray | None = None
+    words: tuple[np.ndarray, ...] | None = None
+    env: tuple[np.ndarray, ...] | None = None
+
+    def __post_init__(self):
+        ops = np.asarray(self.ops, dtype=np.complex128)
+        if ops.ndim != 4 or ops.shape[2] != ops.shape[3] or ops.shape[1] < 1:
+            raise ValueError("ops must have shape [n, L, chi, chi] with L >= 1")
+        n, L, chi, _ = ops.shape
+        event_modes = tuple(tuple(int(x) for x in pk) for pk in self.event_modes)
+        if len(event_modes) != n or any(len(pk) < 1 for pk in event_modes):
+            raise ValueError("event_modes must list n non-empty tuples of modes")
+        flat = [x for pk in event_modes for x in pk]
+        if len(set(flat)) != len(flat):
+            raise ValueError("event modes must be distinct within and across events")
+        if flat and (min(flat) < 0 or max(flat) >= self.m):
+            raise ValueError("mode index out of range")
+        if self.words is None:
+            words = tuple(np.eye(len(pk), dtype=np.int64) for pk in event_modes)
+        else:
+            words = tuple(np.asarray(w, dtype=np.int64) for w in self.words)
+        if len(words) != n:
+            raise ValueError("words must have one entry per event")
+        for k, (w, pk) in enumerate(zip(words, event_modes)):
+            if w.ndim != 2 or w.shape[1] != len(pk) or not 1 <= w.shape[0] <= L or (w < 0).any():
+                raise ValueError(f"words[{k}] must be a non-negative int array [L_k, |P_k|] with 1 <= L_k <= L")
+            for l in range(w.shape[0], L):
+                if np.any(ops[k, l]):
+                    raise ValueError(f"ops[{k}, {l}] must be zero: event {k} has {w.shape[0]} labels")
+        if self.env is None:
+            env = tuple(np.zeros(w.shape[0], dtype=np.int64) for w in words)
+        else:
+            env = tuple(np.asarray(e, dtype=np.int64).reshape(-1) for e in self.env)
+            if len(env) != n or any(e.shape != (w.shape[0],) or (e < 0).any() for e, w in zip(env, words)):
+                raise ValueError("env must have one non-negative int array [L_k] per event")
+        s0 = np.asarray(self.s0, dtype=np.complex128).reshape(-1)
+        if s0.shape != (chi,):
+            raise ValueError("s0 must have length chi")
+        final = None if self.final is None else np.asarray(self.final, dtype=np.complex128).reshape(-1)
+        if final is not None and final.shape != (chi,):
+            raise ValueError("final must have length chi")
+        object.__setattr__(self, "ops", ops)
+        object.__setattr__(self, "event_modes", event_modes)
+        object.__setattr__(self, "words", words)
+        object.__setattr__(self, "env", env)
+        object.__setattr__(self, "s0", s0)
+        object.__setattr__(self, "final", final)
+
+    @property
+    def n(self) -> int:
+        """Number of emission events."""
+        return self.ops.shape[0]
+
+    @property
+    def chi(self) -> int:
+        """Register dimension (MPS bond dimension)."""
+        return self.ops.shape[2]
+
+    @property
+    def labels(self) -> tuple[int, ...]:
+        """Per-event label counts (L_0 .. L_{n-1})."""
+        return tuple(w.shape[0] for w in self.words)
+
+    @property
+    def is_single_photon(self) -> bool:
+        """Whether every label emits exactly one photon (the case of `EmitterMPS`)."""
+        return all((w.sum(axis=1) == 1).all() for w in self.words)
+
+    @property
+    def photons_max(self) -> int:
+        """N_max = sum_k max_l |w_{k,l}| (= n for a single-photon chain)."""
+        return int(sum(w.sum(axis=1).max() for w in self.words))
+
+    @property
+    def photon_numbers(self) -> tuple[int, ...]:
+        """The emitted photon numbers the chain can reach (sums of one label's |w| per event), largest first."""
+        reach = {0}
+        for w in self.words:
+            reach = {a + int(b) for a in reach for b in set(w.sum(axis=1).tolist())}
+        return tuple(sorted(reach, reverse=True))
+
+    @property
+    def env_words(self) -> np.ndarray:
+        """The env words [E, n]: one env value per event, every combination of the values present (E = 1 when every
+        event uses a single env value; then the chain is one coherent chain).
+        """
+        vals = [sorted(set(e.tolist())) for e in self.env]
+        grids = np.meshgrid(*vals, indexing="ij") if vals else []
+        return np.stack([g.reshape(-1) for g in grids], axis=1).astype(np.int64) if vals else np.zeros((1, 0), np.int64)
+
+    def is_complete(self, atol: float = 1e-10) -> bool:
+        """Whether every event is complete: over its distinct (word, env) groups g, sum_g (sum_{l in g} M_l)^dag
+        (sum_{l in g} M_l) = 1 (the photon-less labels included). The stage is then trace preserving for a unitary U
+        and inputs the chain does not emit into.
+        """
+        for k, (w, e) in enumerate(zip(self.words, self.env)):
+            acc = np.zeros((self.chi, self.chi), dtype=np.complex128)
+            keys = {}
+            for l in range(w.shape[0]):
+                keys.setdefault((tuple(w[l].tolist()), int(e[l])), []).append(l)
+            for ls in keys.values():
+                M = sum(self.ops[k, l] for l in ls)
+                acc += M.conj().T @ M
+            if not np.allclose(acc, np.eye(self.chi), atol=atol):
+                return False
+        return True
+
+    def to_mps(self) -> EmitterMPS:
+        """The `EmitterMPS` of a single-photon chain with n >= 1 and one env value per event. Labels of one event
+        that emit into the same mode are merged into one label (their operators add: sum_l M_l (x) a_p^dag is linear
+        in M), so the result has distinct modes per event as `EmitterMPS` requires; every other chain keeps its labels
+        and order.
+        """
+        if not self.is_single_photon or self.n == 0:
+            raise ValueError("to_mps: a single-photon chain with at least one event")
+        if self.env_words.shape[0] > 1:
+            raise ValueError("to_mps: labels with different env records do not merge into an EmitterMPS")
+        ops_k, modes_k = [], []
+        for k, (w, pk) in enumerate(zip(self.words, self.event_modes)):
+            target = [pk[int(np.argmax(row))] for row in w]
+            uniq = list(dict.fromkeys(target))
+            if len(uniq) == len(target):
+                ops_k.append(self.ops[k, :len(target)])
+            else:
+                ops_k.append(np.stack([sum(self.ops[k, l] for l, t in enumerate(target) if t == p) for p in uniq]))
+            modes_k.append(tuple(uniq))
+        L = max(len(mk) for mk in modes_k)
+        ops = np.zeros((self.n, L, self.chi, self.chi), dtype=np.complex128)
+        for k, o in enumerate(ops_k):
+            ops[k, :len(o)] = o
+        return EmitterMPS(ops=ops, modes=tuple(modes_k), s0=self.s0, m=self.m, final=self.final)
+
+    @staticmethod
+    def from_mps(state: EmitterMPS) -> StageChain:
+        """The chain of an `EmitterMPS`: P_k = modes[k], one photon per label (words = identity)."""
+        return StageChain(ops=state.ops, event_modes=state.modes, s0=state.s0, m=state.m, final=state.final)
+
+    @staticmethod
+    def empty(m: int) -> StageChain:
+        """No source: a photons-only stage (chi = 1, no event)."""
+        return StageChain(ops=np.zeros((0, 1, 1, 1), dtype=np.complex128), event_modes=(), s0=np.ones(1), m=m)
+
+    @staticmethod
+    def from_bin_emitters(emitters, b: int = 0, m: int | None = None) -> StageChain:
+        """One tick of internal-mode emitters (`sequence.ModeBinEmitter` with K = 1, or `BinEmitter`) as a chain:
+        one event per emitter at bin b, on the product register (emitter 1 first). Emitter j's label l with
+        unobserved outcome r is a single-photon label into modes[l] with env r; each `lost` operator q is a photon-less
+        label (empty word) with its own env R + q, so the lost set stays incoherent (`ModeBinEmitter.lost` and an
+        empty word are one concept). The chain then has E = prod_j (R_j + Q_j) env words, each one recurrence in
+        `StageKernel`. Internal modes (K > 1) are refused: `StageChain` has no internal-mode axis.
+        """
+        ems = list(emitters)
+        if not ems:
+            raise ValueError("from_bin_emitters: at least one emitter")
+        dims = [int(e.ops.shape[-1]) for e in ems]
+        chi = int(np.prod(dims))
+        events = []
+        for j, e in enumerate(ems):
+            ops = np.asarray(e.ops, dtype=np.complex128)
+            if ops.ndim == 4:                                     # BinEmitter [n, L, d, d]
+                ops = ops[:, :, None, None]
+            elif ops.ndim == 5:                                   # ModeBinEmitter [n, L, K, d, d]
+                ops = ops[:, :, :, None]
+            if ops.shape[2] != 1:
+                raise NotImplementedError("from_bin_emitters: internal modes (K > 1) have no StageChain form")
+            L, R = ops.shape[1], ops.shape[3]
+            lost = getattr(e, "lost", None)
+            Q = 0 if lost is None else lost.shape[1]
+            left, right = np.eye(int(np.prod(dims[:j]))), np.eye(int(np.prod(dims[j + 1:])))
+            lift = [np.kron(np.kron(left, ops[b, l, 0, r]), right) for r in range(R) for l in range(L)]
+            lift += [np.kron(np.kron(left, lost[b, q]), right) for q in range(Q)]
+            words = np.concatenate([np.tile(np.eye(L, dtype=np.int64), (R, 1)), np.zeros((Q, L), dtype=np.int64)])
+            env = np.concatenate([np.repeat(np.arange(R), L), R + np.arange(Q)]).astype(np.int64)
+            events.append((np.stack(lift), tuple(int(p) for p in e.modes), words, env))
+        Lmax = max(o.shape[0] for o, _, _, _ in events)
+        ops = np.zeros((len(events), Lmax, chi, chi), dtype=np.complex128)
+        for k, (o, _, _, _) in enumerate(events):
+            ops[k, :o.shape[0]] = o
+        s0 = ems[0].s0
+        for e in ems[1:]:
+            s0 = np.kron(s0, e.s0)
+        finals = [getattr(e, "final", None) for e in ems]
+        final = None
+        if all(f is not None for f in finals):
+            final = finals[0]
+            for f in finals[1:]:
+                final = np.kron(final, f)
+        mm = (max(p for _, P, _, _ in events for p in P) + 1) if m is None else m
+        return StageChain(ops=ops, event_modes=tuple(P for _, P, _, _ in events), s0=s0, m=mm, final=final,
+                          words=tuple(w for _, _, w, _ in events), env=tuple(e for _, _, _, e in events))
 
 
 @dataclass(frozen=True)

@@ -21,6 +21,10 @@ scatters - about chi x the work and memory of `FockSLOSKernel`; the L^n-componen
 same state (which `SuperpositionSLOSKernel` would need) never appears. At the end the emitter is projected on `f`
 (pure output amplitudes) or traced (a mixture of chi pure states, whose probabilities add).
 
+Ragged chains (`EmitterMPS.labels`: L_k labels at event k) need nothing else: a padded slot is a
+zero operator on the column modes[k][0], so C_j gains exactly 0 from it, and the cost is that of the
+chain padded to L_max.
+
 Normalization follows `FockSLOSKernel` (deferred): one photon per event into distinct input modes,
 so the input factor is 1; the raw recurrence yields amplitude / prod(t_j!) and `probs`
 multiplies |amp|^2 by prod(t_j!). Differentiable in U (and in the emitter operators, if they
@@ -61,11 +65,20 @@ class EmitterSLOSKernel:
         if tuple(ops_tensor.shape) != (self.n, self.L, self.chi, self.chi):
             raise ValueError("ops_tensor must have shape [n, L, chi, chi]")
         self.ops = ops_tensor.to(device=self.device, dtype=self.cdtype)
+        modes = state.modes
+        if state.is_ragged:
+            # padded slots: zero operator on the real column modes[k][0], so C_j gains exactly 0; the
+            # constant mask keeps their gradient at zero (an optimiser cannot grow a phantom label)
+            mask_t = torch.as_tensor(state.label_mask(), device=self.device)[..., None, None]
+            if bool((self.ops.detach() * ~mask_t).abs().max() > 0):
+                raise ValueError("ops_tensor: the padded slots of a ragged chain (EmitterMPS.label_mask) must be zero")
+            self.ops = self.ops * mask_t
+            modes = state.modes_padded()
         self.s0 = torch.as_tensor(state.s0).to(device=self.device, dtype=self.cdtype)   # [chi]
         self.final = (None if state.final is None
                       else torch.as_tensor(state.final).to(device=self.device, dtype=self.cdtype))
         # _in_mode[k]: LongTensor [L], the input column of U for each label of event k
-        self._in_mode = [torch.tensor(list(state.modes[k]), dtype=torch.long, device=self.device)
+        self._in_mode = [torch.tensor(list(modes[k]), dtype=torch.long, device=self.device)
                          for k in range(self.n)]
 
         self.output_prob_norm = torch.as_tensor(self.layers.output_prob_norms()).to(dtype=self.rdtype, device=self.device)

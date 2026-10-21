@@ -129,6 +129,7 @@ def emitter_sample_reference(state: EmitterMPS, U: torch.Tensor, shots: int,
     reduced density matrices (section 1), method="matrix" the gap-Kraus + matrix-cofactor
     computation of section 3 (the kernel's algorithm).
     """
+    state.require_uniform_labels("emitter_sample_reference")
     U = torch.as_tensor(U, dtype=C128)
     m = U.shape[0]
     n = state.n
