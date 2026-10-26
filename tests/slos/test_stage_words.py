@@ -196,6 +196,67 @@ def test_probabilities_and_bond_amplitudes_sum_the_env_words():
     assert torch.allclose(gf.value[0], (amp.abs() ** 2).sum(0), atol=1e-14, rtol=0)
 
 
+def test_carry_over_on_a_graded_chain_lists_each_carried_state_once():
+    """A graded chain (vacuum and two-photon labels) with carried-in inputs of 0, 1 and 2 photons: inputs of
+    different photon numbers reach the same full patterns, so a (q, c) pair comes from several inputs. Each carried
+    state appears once per q, and its row holds every input's operator (against the permanent oracle)."""
+    ch = _word_chain(WORDS, 2, 6, seed=1)
+    U = haar_unitary(6, seed=17)
+    inputs = [[0] * 6, [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 1]]
+    det = (0, 2, 4)
+    sk = StageKernel(ch, inputs=inputs, detected=det)
+    res = sk.blocks(U)
+    n_patterns = sum(g.patterns.shape[0] for g in sk.kraus(U))
+    n_rows = sum(cl.basis.numel() for cl in res.classes)
+    assert n_rows < n_patterns                                  # the duplicate case is exercised
+    det_tab, car = res.detected.tolist(), res.carried.tolist()
+    for cl in res.classes:
+        for i, qi in enumerate(cl.q.tolist()):
+            rows = cl.basis[i].tolist()
+            assert len(set(rows)) == len(rows)
+            Kq = cl.value[i].reshape(len(rows), 2, len(inputs), 2)
+            for j, c in enumerate(rows):
+                o = [a + b for a, b in zip(det_tab[qi], car[c])]
+                for b, s in enumerate(inputs):
+                    ref = _oracle(ch, s, U, [o], ch.env_words[0])[0]
+                    assert torch.allclose(Kq[j, :, b], ref, atol=1e-12, rtol=0)
+    G = sum(torch.einsum("qai,qaj->ij", cl.value.conj(), cl.value) for cl in res.classes)
+    assert torch.allclose(G, torch.eye(len(inputs) * 2, dtype=C128), atol=1e-13, rtol=0)
+
+
+def test_two_graded_carry_over_stages_equal_one_shot():
+    """Photon-less labels in both stages: stage 2's carried-in basis mixes 0 and 1 photons (the case whose carried
+    states were listed twice). Stage 1 emits into modes 0, 1 with U1 on 0-3 and detects 0; stage 2 emits into 4, 5
+    with U2 on 1-5. Equals full detection of the unrolled problem with U2 U1."""
+    one = _word_chain([((0, 1), [[1, 0], [0, 1], [0, 0]]), ((4, 5), [[1, 0], [0, 1], [0, 0]])], 2, 6, seed=21)
+    ch1 = StageChain(ops=one.ops[:1], event_modes=one.event_modes[:1], s0=one.s0, m=6, words=one.words[:1])
+    ch2 = StageChain(ops=one.ops[1:], event_modes=one.event_modes[1:], s0=one.s0, m=6, words=one.words[1:])
+    U1 = torch.eye(6, dtype=C128)
+    U1[:4, :4] = haar_unitary(4, seed=22)
+    U2 = torch.eye(6, dtype=C128)
+    U2[1:, 1:] = haar_unitary(5, seed=23)
+    rho0 = torch.outer(torch.as_tensor(one.s0, dtype=C128), torch.as_tensor(one.s0, dtype=C128).conj())
+    want = {}
+    r = StageKernel(one, detected=range(6)).apply(U2 @ U1, rho0, strict=True)
+    for cl in r.classes:
+        for i, qi in enumerate(cl.q.tolist()):
+            want[tuple(r.detected[qi].tolist())] = cl.value[i]
+    got = {}
+    r1 = StageKernel(ch1, detected=[0]).apply(U1, rho0, strict=True)
+    for cl in r1.classes:
+        for i, qi in enumerate(cl.q.tolist()):
+            basis = [r1.carried[c].tolist() for c in cl.basis[i].tolist()]
+            assert len({tuple(b) for b in basis}) == len(basis)
+            r2 = StageKernel(ch2, inputs=basis, detected=range(6)).apply(U2, cl.value[i], strict=True)
+            for cl2 in r2.classes:
+                for i2, q2 in enumerate(cl2.q.tolist()):
+                    q = tuple(a + b for a, b in zip(r1.detected[qi].tolist(), r2.detected[q2].tolist()))
+                    got[q] = got.get(q, 0) + cl2.value[i2]
+    for q, w in want.items():
+        assert torch.allclose(got.get(q, torch.zeros_like(w)), w, atol=1e-13, rtol=0)
+    assert all(q in want or not v.abs().max() > 1e-15 for q, v in got.items())
+
+
 def test_carry_over_with_words_and_env():
     """R4 on an R2 chain: the blocks get an env axis, sum_e sum_q K^dag K = 1, apply = the env-summed update."""
     ch = _cases()["env"]

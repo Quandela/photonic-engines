@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.1 — 2026-10
+
+### Fixed
+- `slos.StageKernel`, partial detection with carry-over on graded chains (photon-less or multiphoton labels): when
+  carried-in inputs of different photon numbers reach the same output pattern, **0.2.0 listed that carried state twice**
+  in `StageCarry.basis` (two rows of the block operator, zero in each other's input columns). The arithmetic of `apply`
+  and the total probability were right, but a caller that maps rows to carried states by occupation and keeps one row
+  lost probability. Each distinct carried state now has one row. Single-photon chains are unchanged (fixed-seed outputs
+  bit-identical).
+
+### Removed
+- `results/keep/k1_fingerprint_main_fc6afe6_mac.pt`, an internal test fixture shipped by mistake in 0.2.0.
+
 ## 0.2.0 — 2026-10
 
 Two additions to the emitter engines. Existing results are unchanged: fixed-seed outputs of the existing samplers and

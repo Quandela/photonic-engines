@@ -509,15 +509,21 @@ class StageKernel:
         on_d[list(self.detected)] = True
         qtab, qid = _unique_rows(P * on_d)
         ctab, cid = _unique_rows(P * ~on_d)
-        # a (q, c) pair is one output pattern, so it appears once; its slot in K_q is its rank among q's patterns
+        # one row of K_q per distinct (q, c) pair, its slot = its rank among q's pairs (first appearance). On a
+        # single-photon chain each pair is one output pattern. On a graded chain (photon-less or multiphoton
+        # labels) inputs of different photon numbers can reach the same full pattern: those patterns share the
+        # row, each filling its own input columns.
         nq = qtab.shape[0]
-        order = np.argsort(qid, kind="stable")
-        size = np.bincount(qid, minlength=nq)
+        ptab, pid = _unique_rows(np.stack([qid, cid], axis=1))
+        pq = ptab[:, 0]
+        order = np.argsort(pq, kind="stable")
+        size = np.bincount(pq, minlength=nq)
         start = np.concatenate([[0], np.cumsum(size)[:-1]])
-        slot = np.empty_like(qid)
-        slot[order] = np.arange(qid.size) - start[qid[order]]
-        basis = np.empty(qid.size, dtype=np.int64)
-        basis[start[qid] + slot] = cid
+        pslot = np.empty_like(pq)
+        pslot[order] = np.arange(pq.size) - start[pq[order]]
+        basis = np.empty(pq.size, dtype=np.int64)
+        basis[start[pq] + pslot] = ptab[:, 1]
+        slot = pslot[pid]
         sizes = sorted({int(x) for x in size})
         cls_of = np.searchsorted(np.asarray(sizes), size)
         local = np.empty(nq, dtype=np.int64)
@@ -526,6 +532,8 @@ class StageKernel:
             qs = np.nonzero(cls_of == ci)[0]
             local[qs] = np.arange(qs.size)
             rows = basis[(start[qs][:, None] + np.arange(C)[None, :])]
+            if C > 1 and not np.all(np.diff(np.sort(rows, axis=1), axis=1)):
+                raise RuntimeError("StageKernel: a carried-out state appears twice in one block (internal error)")
             classes.append((C, torch.as_tensor(qs, device=self.device), torch.as_tensor(rows, device=self.device)))
         dev = self.device
         groups, r0 = [], 0
