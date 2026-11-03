@@ -18,7 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true", default=False,
-                     help="also run tests marked slow (Triton CPU-interpreter scripts, > 30 s each)")
+                     help="also run tests marked slow (> 30 s each: Triton CPU-interpreter scripts, long CPU "
+                          "tests, GPU statistical validations)")
 
 
 # The `gpu` and `slow` markers are declared in pyproject.toml ([tool.pytest.ini_options] markers).

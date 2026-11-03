@@ -93,8 +93,8 @@ runs.
 
 ```bash
 pytest -q                    # what the installed extras allow; tests needing a missing extra are skipped
-pytest -q --runslow          # + the Triton CPU-interpreter checks
-pytest -q -m gpu             # GPU-only sampler checks
+pytest -q --runslow          # + the slow tier: Triton CPU-interpreter checks, long statistical validations
+pytest -q -m gpu             # GPU-only checks, seconds; add --runslow for the GPU validation scripts (~2.5 min)
 ```
 
 ## Contributing — and the frontier

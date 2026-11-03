@@ -113,6 +113,7 @@ def _sequence_case(k, n, m):
                                    (2 * a, 2 * a + 1)) for a in range(k)]
 
 
+@pytest.mark.slow                                      # ~10 min on CPU (625 s, 8-core host)
 def test_sequence_indist_kraus_marginals_joint_and_samples():
     from photonic_engines.sequence import SequenceKernel
     from photonic_engines.slos import EmitterSLOSKernel

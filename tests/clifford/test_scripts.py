@@ -1,6 +1,7 @@
 """pytest entry for the Clifford sampler check scripts (kept as runnable `check_*.py` scripts,
 renamed from gpu-clifford's tests/test_*.py). Without a CUDA device the kernel tests run under the Triton CPU
-interpreter (TRITON_INTERPRET=1); the GPU-only scripts are skipped."""
+interpreter (TRITON_INTERPRET=1); the GPU-only scripts are skipped. Both sets are statistical validations (100k-300k
+shots against the exact distribution), so both are `slow`: run them with `--runslow`."""
 import os
 import subprocess
 import sys
@@ -32,8 +33,10 @@ def test_cpu_interpreter(script):
 
 
 @pytest.mark.gpu
+@pytest.mark.slow
 @pytest.mark.skipif(not HAS_CUDA, reason="needs a CUDA device")
 @pytest.mark.parametrize("script", ["check_sampler_gpu.py", "check_batch.py", "check_single.py",
                                     "check_cuda.py", "check_exq.py"])
-def test_gpu(script):
+def test_gpu_check_script(script):
+    """13-40 s each on an NVIDIA L4 (about 2.5 min for the five): `--runslow` on a CUDA machine."""
     _run(script)

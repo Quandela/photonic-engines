@@ -45,7 +45,7 @@ pythonpath = ["."]                # `from tests.helpers import ...` also under t
 python_files = ["test_*.py"]
 markers = [
     "gpu: needs a CUDA device (skipped otherwise)",
-    "slow: > 30 s on CPU; run with --runslow or PE_RUN_SLOW=1",
+    "slow: > 30 s (on CPU, or a statistical validation on a GPU); run with --runslow or PE_RUN_SLOW=1",
 ]
 
 # ---------------------------------------------------------------------------------------------
