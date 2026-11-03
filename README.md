@@ -21,8 +21,10 @@ pip install "photonic-engines[cuda]"       # + triton, cupy: the GPU sampling ke
 pip install "photonic-engines[perceval]"   # + Perceval adapters
 ```
 
-From a clone: `pip install -e ".[dev]"`. The GPU samplers need an NVIDIA GPU with CUDA ≥ 12 (the reference
-measurements use an H100 PCIe); `environment-gpu.txt` pins the environment they were taken with.
+From a clone: `pip install -e ".[dev]"`, or `pip install -e ".[dev,cuda,perceval]"` to run the GPU and Perceval tests
+too (without an extra, its tests are skipped). The GPU samplers need an NVIDIA GPU with CUDA ≥ 12; the `cuda` extra
+installs `cupy-cuda13x`, which needs CUDA 13 (driver ≥ 580). The reference measurements use an H100 PCIe;
+`environment-gpu.txt` pins the environment they were taken with.
 
 ## Quick start
 
