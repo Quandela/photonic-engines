@@ -5,6 +5,7 @@ tolerances derived from the dtype (identities) or from shot noise (samplers).
 """
 import itertools
 import math
+import os
 
 import pytest
 import torch
@@ -241,8 +242,10 @@ def test_fock_sample_indist_dispatch():
     """Ideal x is the lossless path, a spec is accepted, the exq backend refuses, loss composes."""
     pytest.importorskip("triton")
     from photonic_engines.clifford import fock_sample
-    U = haar_unitary(4, 8)
-    g = lambda: torch.Generator().manual_seed(5)
+    # on the device when there is one: a compiled Triton kernel (no interpreter) cannot take CPU tensors
+    dev = "cuda" if torch.cuda.is_available() and os.environ.get("TRITON_INTERPRET", "0") != "1" else "cpu"
+    U = haar_unitary(4, 8).to(dev)
+    g = lambda: torch.Generator(device=dev).manual_seed(5)
     assert torch.equal(fock_sample(U, [0, 1], 6, generator=g()), fock_sample(U, [0, 1], 6, indist=1.0, generator=g()))
     occ = fock_sample(U, [0, 1], 6, indist=Distinguishability(species=(0.5, 0.4)), loss=0.8, generator=g())
     assert occ.shape == (6, 4) and (occ.sum(1) <= 2).all()

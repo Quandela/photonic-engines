@@ -6,12 +6,18 @@ import itertools
 import math
 import os
 
-os.environ.setdefault("TRITON_INTERPRET", "1")
 import numpy as np
 import torch
+
+# The GPU check scripts import exact_dist / haar from here: an unconditional TRITON_INTERPRET=1 would run
+# their kernels under the Triton CPU interpreter on a CUDA host too.
+if not torch.cuda.is_available():
+    os.environ.setdefault("TRITON_INTERPRET", "1")
 from check_cofactors import per_ryser
 
 from photonic_engines.clifford.sampler import fock_sample
+
+DEV = "cuda" if torch.cuda.is_available() and os.environ.get("TRITON_INTERPRET", "0") != "1" else "cpu"
 
 
 def haar(m, rng):
@@ -32,22 +38,22 @@ def exact_dist(U, in_modes):
     return dist
 
 if __name__ == "__main__":
-    os.environ.setdefault("TRITON_INTERPRET", "1")
     rng = np.random.default_rng(1)
-    dev = "cpu"
+    dev = DEV
     # deterministic cases
-    occ = fock_sample(torch.eye(3, dtype=torch.complex128), [0, 2, 2], 50, generator=torch.Generator().manual_seed(0)).numpy()
+    occ = fock_sample(torch.eye(3, dtype=torch.complex128, device=dev), [0, 2, 2], 50,
+                      generator=torch.Generator(device=dev).manual_seed(0)).cpu().numpy()
     assert (occ == np.array([1, 0, 2])).all(), "identity must return the input occupation"
-    hom = torch.tensor([[1, 1], [1, -1]], dtype=torch.complex128) / math.sqrt(2)
-    occ = fock_sample(hom, [0, 1], 300, generator=torch.Generator().manual_seed(0)).numpy()
+    hom = torch.tensor([[1, 1], [1, -1]], dtype=torch.complex128, device=dev) / math.sqrt(2)
+    occ = fock_sample(hom, [0, 1], 300, generator=torch.Generator(device=dev).manual_seed(0)).cpu().numpy()
     assert not (occ == 1).all(1).any(), "HOM: |1,1> must never occur"
     print("identity / HOM: OK")
     for (m, in_modes, shots, algo) in [(4, [0, 1, 2], 600, "2018"), (5, [0, 0, 1], 600, "2018"),
                                        (4, [0, 1, 2, 3], 600, "2020"), (5, [0, 0, 1], 600, "2020")]:
         U = haar(m, rng)
         dist = exact_dist(U, in_modes)
-        gen = torch.Generator().manual_seed(0)
-        occ = fock_sample(torch.tensor(U), in_modes, shots, generator=gen, algo=algo).numpy()
+        gen = torch.Generator(device=dev).manual_seed(0)
+        occ = fock_sample(torch.tensor(U, device=dev), in_modes, shots, generator=gen, algo=algo).cpu().numpy()
         emp = {}
         for row in occ:
             assert tuple(row) in dist, f"impossible outcome {row}"

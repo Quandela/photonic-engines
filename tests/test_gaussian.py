@@ -12,6 +12,7 @@ chi-square law (dof + 5 sqrt(2 dof)), fixed seeds.
 from __future__ import annotations
 
 import math
+import os
 from collections import Counter
 
 import numpy as np
@@ -25,6 +26,10 @@ from photonic_engines.gaussian.sampler import _amps, _norm
 from photonic_engines.imperfections import lossy_squeezing
 from photonic_engines.slos.kernel import ProductSLOSKernel
 from photonic_engines.states import GaussianInput
+
+# The Triton kernels forced on below run on the device when there is one (a CUDA host does not set TRITON_INTERPRET,
+# and a compiled Triton kernel cannot take CPU tensors), under the CPU interpreter otherwise.
+DEV = "cuda" if torch.cuda.is_available() and os.environ.get("TRITON_INTERPRET", "0") != "1" else "cpu"
 
 EPS = np.finfo(np.float64).eps
 
@@ -590,12 +595,13 @@ def test_collision_aware_sieve_equals_the_plain_one(monkeypatch, counts, fused):
 def _triton_multi_vs_v1(monkeypatch, counts, V, seed, pairing="auto"):
     pytest.importorskip("triton")
     import photonic_engines.gaussian.hafnian as H
-    monkeypatch.setattr(H, "_TRITON", True)                               # CPU tensors: the Triton interpreter
+    monkeypatch.setattr(H, "_TRITON", True)                               # on CPU: the Triton interpreter
     rng = np.random.default_rng(seed)
     m = len(counts)
     B = _rand_sym(m, rng); gam = rng.normal(size=(V, m)) + 1j * rng.normal(size=(V, m)); col = rng.normal(size=(V, m)) + 0j
     A, _ = expand(B, gam[0], counts); lab = np.repeat(np.arange(m), counts)
-    M, Ma = H.lhaf_poly_multi(A, gam[:, lab], col[:, lab], labels=lab, return_abs=True, pairing=pairing)
+    M, Ma = H.lhaf_poly_multi(A, gam[:, lab], col[:, lab], device=DEV, labels=lab, return_abs=True, pairing=pairing)
+    M, Ma = M.cpu(), Ma.cpu()
     for v in range(V):
         ref, ra = lhaf_poly(A, gam[v, lab], col[v, lab], return_abs=True)
         # both round-offs: the plain sieve's sum |term| and the grouped one's (a cross pairing can be worse conditioned)
@@ -628,7 +634,7 @@ def test_triton_powers_paths_equal_numpy_powers(q, n, V):
     Ye = rng.normal(size=(E, 2 * V)) + 1j * rng.normal(size=(E, 2 * V)); Xe = rng.normal(size=(E, 2 * V)) + 1j * rng.normal(size=(E, 2 * V))
     Ye[-1] = 0; Xe[-1] = 0                                               # E - 1: the dummy vertex that pads to Q
     idx = np.stack([rng.permutation(E - 1)[:q] for _ in range(3)])
-    tr, pa = powers_paths(torch.tensor(Ce), torch.tensor(Ye), torch.tensor(Xe), torch.tensor(idx), n, V)
+    tr, pa = powers_paths(*(torch.tensor(a, device=DEV) for a in (Ce, Ye, Xe, idx)), n, V)
     assert tr.shape == (3, n + 1) and pa.shape == (3, V, n + 1, 3)
     for s in range(3):
         C = Ce[np.ix_(idx[s], idx[s])]; Y = Ye[idx[s]]; X = Xe[idx[s]]
@@ -1081,7 +1087,7 @@ def test_dd_series_triton_kernel_small(monkeypatch):
     out = {}
     for tri in (False, True):
         monkeypatch.setattr(H, "_DD_TRITON", tri)
-        out[tri] = H.lhaf_poly_multi(A, g[:, lab], col[:, lab], labels=lab, precision="dd")
+        out[tri] = H.lhaf_poly_multi(A, g[:, lab], col[:, lab], device=DEV, labels=lab, precision="dd")
     assert float((out[True] - out[False]).abs().max()) <= 4 * EPS * float(out[False].abs().max())
 
 
@@ -1099,6 +1105,7 @@ def test_dd_fused_slices_are_bit_identical(shape):
     def rn():
         return torch.randn(*shape, generator=g, dtype=torch.float64)
     hi = torch.complex(rn(), rn()) * torch.exp(3 * rn()); lo = hi * 1e-17 * rn()
+    hi, lo = hi.to(DEV), lo.to(DEV)
     hi[..., 0, :] = 0; lo[..., 0, :] = 0
     for left in (True, False):
         beta, s = dd.plan(2 * shape[-1] if left else 2 * shape[-2])
@@ -1121,7 +1128,7 @@ def test_dd_sieve_with_fused_slices_is_unchanged(monkeypatch):
     out = {}
     for fu in (False, True):
         monkeypatch.setattr(D, "_FUSED_SLICES", fu)
-        out[fu] = H.lhaf_poly_multi(A, g[:, lab], col[:, lab], labels=lab, precision="dd")
+        out[fu] = H.lhaf_poly_multi(A, g[:, lab], col[:, lab], device=DEV, labels=lab, precision="dd").cpu()
     assert np.array_equal(np.asarray(out[True]), np.asarray(out[False]))
 
 

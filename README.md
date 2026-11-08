@@ -21,8 +21,10 @@ pip install "photonic-engines[cuda]"       # + triton, cupy: the GPU sampling ke
 pip install "photonic-engines[perceval]"   # + Perceval adapters
 ```
 
-From a clone: `pip install -e ".[dev]"`. The GPU samplers need an NVIDIA GPU with CUDA ≥ 12 (the reference
-measurements use an H100 PCIe); `environment-gpu.txt` pins the environment they were taken with.
+From a clone: `pip install -e ".[dev]"`, or `pip install -e ".[dev,cuda,perceval]"` to run the GPU and Perceval tests
+too (without an extra, its tests are skipped). The GPU samplers need an NVIDIA GPU with CUDA ≥ 12; the `cuda` extra
+installs `cupy-cuda13x`, which needs CUDA 13 (driver ≥ 580). The reference measurements use an H100 PCIe;
+`environment-gpu.txt` pins the environment they were taken with.
 
 ## Quick start
 
@@ -93,8 +95,8 @@ runs.
 
 ```bash
 pytest -q                    # what the installed extras allow; tests needing a missing extra are skipped
-pytest -q --runslow          # + the Triton CPU-interpreter checks
-pytest -q -m gpu             # GPU-only sampler checks
+pytest -q --runslow          # + the slow tier: Triton CPU-interpreter checks, long statistical validations
+pytest -q -m gpu             # GPU-only checks, seconds; add --runslow for the GPU validation scripts (~2.5 min)
 ```
 
 ## Contributing — and the frontier

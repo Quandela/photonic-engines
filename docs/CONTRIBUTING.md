@@ -43,13 +43,16 @@ failure instead of a skip.
 ```bash
 pytest -q                          # the default suite, CPU
 pytest -q --cov=photonic_engines   # the same, with the coverage gate (floor: 85 %)
-pytest -q --runslow -m slow        # the Triton CPU-interpreter sampler checks: 1-3 min each
+pytest -q --runslow -m slow        # the slow tier: CPU-interpreter sampler checks, 1-3 min each, and long CPU tests
 pytest -q                          # on a CUDA machine: the `gpu` marks stop skipping
+pytest -q --runslow -m gpu         # on a CUDA machine: + the GPU validation scripts, ~2.5 min on an L4
 ```
 
 * **default** — everything that runs in seconds on a CPU; CI runs it on every push.
-* **`slow`** — the sampler correctness scripts under the Triton CPU interpreter; run them when you touch `clifford/`.
-* **`gpu`** — skipped without a CUDA device. A change to a kernel is not finished until it has run on a GPU.
+* **`slow`** — anything over ~30 s: the sampler correctness scripts under the Triton CPU interpreter, long CPU tests,
+  and the GPU statistical validations (`test_scripts.py::test_gpu_check_script`); run them when you touch `clifford/`.
+* **`gpu`** — skipped without a CUDA device. A change to a kernel is not finished until it has run on a GPU, with
+  `--runslow`.
 * **`check_*.py` scripts** — `tests/clifford/check_*.py` are runnable programs; `tests/clifford/test_scripts.py` wraps
   them.
 
