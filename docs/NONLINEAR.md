@@ -32,7 +32,7 @@ implemented (§7). Tests: `tests/test_nonlinear.py`, tutorial §9f.
   **Measured** (§5b): the frontier is the Fock one minus log(‖c‖₁²(1 + κB))/log ρ with κ = 0.55 ± 0.08,
   i.e. −2.4 photons at φ = π/2 whatever the mode ratio, and 1.9 photons per site, layout-independent.
 - **The φ envelope is arithmetic, not monotone** (§5b, §5c): what the sampler pays is the denominator of
-  φ/2π, so φ = π/2 is the cheapest non-trivial point (−2.5 photons) and the weak φ = π/16 the most expensive
+  φ/π, so φ = π/2 is the cheapest non-trivial point (−2.5 photons) and the weak φ = π/16 the most expensive
   measured (−8.3). Continuity at φ → 0 holds at fixed n but the scale is φn², so not at frontier sizes.
 - **Imperfections** (§6): loss before the sites is the input-side draw every engine uses, and a stream then
   runs the expansion of its OWN photon count; loss after the last site is binomial thinning; partial
@@ -233,7 +233,7 @@ B = 16), which is the Cauchy–Schwarz bound of §5 being tight, measured.
 
 φ = 0 lands on the Fock frontier exactly (38.5) and φ = π within the search's resolution (38.3), as they
 must: both are one branch, and the sampler then IS `fock_sample`. **The envelope is not monotone in the
-strength of the non-linearity — it is arithmetic in φ.** What costs is the denominator of φ/2π, so the
+strength of the non-linearity — it is arithmetic in φ.** What costs is the denominator of φ/π, so the
 "maximally non-linear" Kerr point φ = π/2 is the CHEAPEST non-trivial one (−2.5 photons) while a weak
 φ = π/16 is the most expensive measured (−8.3), and 3π/4 (−4.2) is cheaper than π/8 (−6.3). A φ with no
 short period at all costs B ≈ n and ‖c‖₁² ~ n (not measured; the scan is rational multiples of π).

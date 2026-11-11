@@ -26,7 +26,7 @@ from importlib import import_module
 from .masks import Mask, graded_state_space_size, state_space_size
 from .states import EmitterMPS, FockState, FockSuperposition, GaussianInput, ProductSuperposition, StageChain, spin_gate
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 __all__ = [
     "EmitterMPS",

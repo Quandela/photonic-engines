@@ -6,37 +6,83 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install "ruff>=0.14"
       - run: ruff check .
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python-version: ["3.10", "3.12"]
     env:
       PE_REQUIRE_FULL_SUITE: "1"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       # CPU wheel of torch on purpose: the runners have no GPU and the CUDA wheel is ~2.5 GB.
       - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -e ".[dev,perceval]" "triton>=3.0"
       - run: pytest -q --cov=photonic_engines
+      # The coverage table on the run's summary page; pytest-cov above already enforces fail_under, so not twice here.
+      - if: always()
+        run: coverage report --format=markdown --fail-under=0 >> "$GITHUB_STEP_SUMMARY"
+      - if: matrix.python-version == '3.12'
+        run: coverage report --format=total --fail-under=0 > coverage-total.txt
+      - if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-total
+          path: coverage-total.txt
+
+  # README coverage badge: an SVG force-pushed to the orphan branch `badges` (one commit), no outside service. The only
+  # job with a write token; pushes to main of this repository only (never pull requests, never forks).
+  coverage-badge:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'Quandela/photonic-engines'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: coverage-total
+      - name: Write coverage.svg
+        run: |
+          mkdir badge
+          python3 - <<'EOF'
+          total = round(float(open("coverage-total.txt", encoding="utf-8").read().strip()))
+          colour = "#4c1" if total >= 85 else "#e05d44"  # 85 = fail_under in pyproject.toml
+          svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="104" height="20" role="img" aria-label="coverage: {total}%">
+          <title>coverage: {total}%</title><rect width="61" height="20" fill="#555"/><rect x="61" width="43" height="20" fill="{colour}"/>
+          <g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">
+          <text x="30.5" y="14">coverage</text><text x="82.5" y="14">{total}%</text></g></svg>
+          """
+          open("badge/coverage.svg", "w", encoding="utf-8").write(svg)
+          EOF
+      - name: Push to the badges branch
+        working-directory: badge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git init -q -b badges
+          git add coverage.svg
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "coverage badge for ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:badges
 
   no-optional-deps:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install torch --index-url https://download.pytorch.org/whl/cpu

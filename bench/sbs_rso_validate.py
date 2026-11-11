@@ -27,7 +27,13 @@
     each of --split-shots streams (16, 64): seconds per shot and cofactor share -- separates a per-stratum batch-size
     effect (fewer streams per kernel call at p < 1) from per-step bookkeeping and from the kernel's per-term cost.
 
+(lossy) --lossy-only, diagnostics, no verdict: the (a) strata of SBS against single photons under loss eta = p on the
+    same instance (fock_sample on k = n - s0 inputs, alternating batches), both stratified over Bin(n, 1 - p); one ratio
+    per p (PE review 11-07, point 3).
+
     python3 bench/sbs_rso_validate.py --backend cuda --csv out.csv
+    python3 bench/sbs_rso_validate.py --backend cuda --lossy-only --n-cont 34 --csv lossy.csv
+    python3 bench/sbs_rso_validate.py --backend cuda --split-only --n-cont 30 --split-p 1 --split-s0 0 --csv split.csv
 """
 from __future__ import annotations
 
@@ -82,6 +88,8 @@ def main():
     ap.add_argument("--split-p", type=float, default=0.99, help="(a-split): p of the per-pass breakdown (0 = skip)")
     ap.add_argument("--split-shots", default="16,64", help="(a-split): streams per post-selected s0 stratum")
     ap.add_argument("--split-s0", default="0,1,2,3", help="(a-split): post-selected offsets s0 = n - k")
+    ap.add_argument("--lossy-only", action="store_true", help="(lossy) alone: SBS vs single photons under loss eta = p, "
+                    "stratified, at --n-cont; no (c), (b), (a), no VERDICT")
     ap.add_argument("--csv", default="")
     args = ap.parse_args()
     dev = torch.device(args.device)
@@ -96,6 +104,12 @@ def main():
         t0 = time.perf_counter()                                              # NVRTC of the mu lane (all tiers, D = 1..6)
         cuda_rect.warmup_mu()                                                 # outside every timed region (H, r10-gate-a §5)
         print(f"warmup_mu: {time.perf_counter() - t0:.1f} s", flush=True)
+    if args.lossy_only:
+        n = args.n_cont
+        U = haar(2 * n, seed=7 * n, dev=dev)                                     # the (a) instance
+        lossy_baseline(args, n, 2 * n, U, dev, kw_rso, "cuda" if dev.type == "cuda" else "triton", rec)
+        write_csv(args.csv, rows_out)
+        return
     if args.split_only:
         n = args.n_cont
         m = 2 * n
@@ -363,6 +377,45 @@ class _Passes(list):
         self.split.append({k: now[k] - self.last[k] for k in now})
         self.last = now
         super().append(x)
+
+
+def lossy_baseline(args, n, m, U, dev, kw_rso, fb, rec):
+    """(lossy) SBS against single photons under loss eta = p on the same instance, both by the stratified estimator.
+    Per stratum s0 = 0..smax (k = n - s0 photons): t_SBS(k) post-selected rso shots and t_lossy(k) fock_sample on k of the
+    n input modes (Haar U: which k does not change the law of the cost), measured in alternating batches so drift hits
+    both alike. t(p) = sum_s Bin(n, 1-p)(s) t(s) for each; one row per stratum (lossy_s0) and per p (lossy: ratio
+    t_SBS / t_lossy and its s.e., errors independent)."""
+    from photonic_engines import ProductSuperposition
+    from photonic_engines.clifford import fock_sample, sbs_rso
+    nb = max(2, args.batches)
+    smax = strata_needed(n, PS, args.mass)
+    st = ProductSuperposition.sbs(n, m, alpha=math.pi / 4)                    # post-selected: the alpha does not enter
+    ss = max(1, args.stratum_shots // nb)
+    raw_s = {s0: [] for s0 in range(smax + 1) if n - s0 >= 1}
+    raw_l = {s0: [] for s0 in raw_s}
+    for s0 in raw_s:                                                          # warm-up / compile every shape
+        k = n - s0
+        sbs_rso.sample(st, U, 2, generator=torch.Generator().manual_seed(1), photons=k, **kw_rso)
+        fock_sample(U, list(range(k)), 2, generator=torch.Generator(device=dev).manual_seed(1), backend=fb)
+    for s0 in raw_s:
+        k = n - s0
+        for b in range(nb):
+            raw_s[s0].extend(_timed_batches(lambda _b, k=k, b=b: (sbs_rso.sample(
+                st, U, ss, generator=torch.Generator().manual_seed(100 * k + b), photons=k, **kw_rso), ss)[1], 1, dev))
+            raw_l[s0].extend(_timed_batches(lambda _b, k=k, b=b: (fock_sample(
+                U, list(range(k)), ss, generator=torch.Generator(device=dev).manual_seed(100 * k + b), backend=fb),
+                ss)[1], 1, dev))
+    tse_s = {s0: mean_se(v) for s0, v in raw_s.items()}
+    tse_l = {s0: mean_se(v) for s0, v in raw_l.items()}
+    for s0 in raw_s:
+        rec(check="lossy_s0", n=n, k=n - s0, s0=s0, value=tse_s[s0][0], se=tse_s[s0][1], ref=tse_l[s0][0],
+            ref_se=tse_l[s0][1], shots=nb * ss)
+    for p in PS:
+        ts, ses, mass = stratified(n, p, tse_s)
+        tl, sel, _ = stratified(n, p, tse_l)
+        r = ts / tl
+        rec(check="lossy", n=n, p=p, value=ts, se=ses, ref=tl, ref_se=sel, ratio=r,
+            ratio_se=r * math.sqrt((ses / ts) ** 2 + (sel / tl) ** 2), mass=mass)
 
 
 def split_a(args, n, m, U, dev, kw_rso, t_fock, rec):

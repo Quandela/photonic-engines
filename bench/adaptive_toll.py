@@ -238,7 +238,7 @@ if a.map:
             c = INK if K == 0 else ramp.get(K, MUTED)
             xs = [r["ratio"] for r in pts]
             if K == 0:
-                ax.plot(xs, [r["nstar"] for r in pts], color=c, linewidth=2.0, label="$K = 0$ (plain sampler, measured)")
+                ax.plot(xs, [r["nstar"] for r in pts], color=c, linewidth=2.0, label="$K = 0$ (no feed-forward, measured)")
             else:                                                               # the cost model, dotted
                 ax.plot(xs, [r["nstar"] for r in pts], color=c, linewidth=0.8, linestyle=(0, (1, 2)))
             mine = [r for r in measured if int(r["K"]) == K and K and r.get("abort", 1.0) == 1.0]
@@ -250,12 +250,12 @@ if a.map:
             for i, r in enumerate(hollow):
                 ax.plot(r["ratio"], r["nstar"], marker="o", markersize=4.5, color=c, markerfacecolor="white",
                         markeredgecolor=c, markeredgewidth=1.2, linestyle="none",
-                        label=f"$K = {K}$ (measured, level chain)" if i == 0 and not meas else None)
+                        label=f"$K = {K}$ (measured, abandoned chains)" if i == 0 and not meas else None)
         ax.set_xscale("log"); ax.set_xticks([1, 1.5, 2, 3, 4, 6, 8, 12]); ax.set_xticklabels(["1", "1.5", "2", "3", "4", "6", "8", "12"])
         ax.minorticks_off()
         lo, hi = ax.get_ylim(); ax.set_ylim(lo - 1.5, hi)                       # room for the two-line footnote below the data
-        ax.set_xlabel("modes per source $m/n$"); ax.set_ylabel("$n^*$ (sources) at 1 sample/s")
-        ax.text(0.99, 0.02, "solid: measured (H100), tables; hollow: level chain; dotted: cost model\n"
+        ax.set_xlabel("modes per photonic input $m/n$"); ax.set_ylabel("$n^*$ (photonic inputs) at 1 sample/s")
+        ax.text(0.99, 0.02, "solid: measured (H100), outcome tables; hollow: abandoned chains; dotted: cost model\n"
                 "$m/n = 2$: 512 shots per point; other $m/n$: 64–128 shots (a few tenths either way)",
                 transform=ax.transAxes, ha="right", fontsize=6.5, color=MUTED)
         ax.legend(loc="upper right", handlelength=2.4)
@@ -295,15 +295,16 @@ if a.png:
                 ax.plot(r["K"], r["nstar"] - base, marker="o", markersize=5, color=c, markeredgecolor="white", markeredgewidth=0.8)
     kmax = max(r["K"] for r in rows)
     if kmax > max(r["K"] for r in rows if r["tables"]):
-        ax.text(max(r["K"] for r in rows if r["tables"]) + 0.6, ax.get_ylim()[1] * 0.97, "one chain per level",
-                fontsize=7, color=MUTED, va="top")
-    lo, hi = ax.get_ylim(); ax.set_ylim(lo - 0.8, hi)                           # room for the footnote below the data
-    ax.set_xlabel("adaptive modes $K$"); ax.set_ylabel(r"$\Delta n^*$ (sources) at 1 sample/s")
+        ax.text(max(r["K"] for r in rows if r["tables"]) + 0.6, ax.get_ylim()[1] * 0.97, "outcome drawn by abandoned chains",
+                fontsize=7.5, color=MUTED, va="top")
+    lo, hi = ax.get_ylim(); ax.set_ylim(lo - 1.4, hi)                           # room for the two-line footnote below the data
+    ax.set_xlabel("adaptive modes $K$"); ax.set_ylabel(r"$\Delta n^*$ (photonic inputs) at 1 sample/s")
     top = ax.secondary_xaxis("top", functions=(lambda K: K * a.n / (2 * a.n), lambda r: r * 2))
     top.set_xlabel(r"photons read adaptively $\bar r = nK/m$ ($m = 2n$)", fontsize=8)
     ax.legend(loc="upper right")
     if measured:
-        ax.text(0.99, 0.02, f"points: measured crossings (H100); $m = 2n$: 512 shots, $m = 3n$: 64–128 shots; "
-                f"model at $n = {a.n}$, $\\rho = {a.rho}$", transform=ax.transAxes, ha="right", fontsize=6.5, color=MUTED)
+        ax.text(0.99, 0.02, f"points: measured crossings (H100); $m = 2n$: 512 shots, $m = 3n$: 64–128 shots\n"
+                f"cost model at $n = {a.n}$, $\\beta = {a.rho}$", transform=ax.transAxes, ha="right", fontsize=7.5,
+                color=MUTED)
     fig.savefig(a.png, dpi=300)
     print("figure:", a.png)

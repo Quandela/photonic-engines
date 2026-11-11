@@ -42,7 +42,8 @@ def test_cpu_interpreter(script):
 @pytest.mark.parametrize("script", ["check_sampler_gpu.py", "check_batch.py", "check_single.py",
                                     "check_cuda.py", "check_exq.py"])
 def test_gpu_check_script(script):
-    """13-40 s each on an NVIDIA L4 (about 2.5 min for the five): `--runslow` on a CUDA machine."""
+    """13-40 s each on an NVIDIA L4 (about 2.5 min for the five; contributor's measurement, PR #1): `--runslow` on a
+    CUDA machine."""
     if script in NEEDS_CUPY and not HAS_CUPY:
         pytest.skip("needs cupy: pip install -e \".[cuda]\"")
     _run(script)

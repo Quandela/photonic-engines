@@ -109,10 +109,12 @@ Every script that produced a measurement of the papers, or a check behind one. T
 | `sbs_run_cost.py` | The sbs frontier under the run-of-S statistic of docs/GAUSSIAN.md §2.1, for comparability with GBS. |
 | `sbs_stratified_cost.py` | Seconds per sample of the rso SBS sampler at a lossy point, by two estimators side by side (P, 10-06, after the eta = 0.7 bracket of runs 20261006_012054 / 20261006_132352 rested on a tail-dominated shot mean). |
 | `sbs_terms.py` | How many pure terms an exact chain-rule sampler for superposition boson sampling would carry. |
+| `sbs_unequal_check.py` | Kind: tool Does: exact enumeration check of the unequal-source superposed-source chain (methods paper Sec. 3, "Unequal sources") against the physical output law, n <= 5. Usage: venv/bin/python bench/sbs_unequal_check.py  |
 | `scaling_distributed.sh` | Strong-scaling sweep of the distributed CPU engine on one node (run from the repository root): bench/scaling_distributed.sh [--sizes "10:20 11:22 12:24"] [--ranks "1 2 4 8 16 32 64"] [--threads auto/1/N] [--out results.c |
 | `sequence_frontier.py` | GPU frontier of the sequence modality (docs/SEQUENCE.md) in k, the number of emitters interfering per bin: dual-rail emitters into a universal interferometer of m = 2k modes per bin (the unrolled problem has k·n photons  |
 | `sequence_precision.py` | Rounding error of the label-amplitude passes of the sequence kernel at k = 16-20 (Supplement C; cross-engine review item #4, docs/SEQUENCE.md §12c). |
 | `sequence_ticks.py` | Complexity of the spin register of a static k-emitter machine, tick by tick (docs/SEQUENCE.md §9): k dual-rail emitters into one m = 2k-mode interferometer with no delay line, sampled by pure trajectories with the label- |
+| `snowman_check.py` | Kind: library (max_error is the oracle of tests/timeloop/test_snowman.py; the CLI prints it) Does: checks that the general delay-line engine (PeriodicNetworkKernel) simulates the snowman (Motes et al. 2014, arXiv:1403.40 |
 | `soret_energy_crossing.py` | Energetic crossing of Soret et al. (arXiv:2601.08068v1) recomputed on their own metric M. |
 | `stage_bench.py` | Timing of the stage kernel (`slos.stage.StageKernel`, docs/DESIGN.md §2.4): Kraus operators of an emitter chain next to a batch of Fock inputs, per input and output pattern, on one device. |
 | `stage_carry_bench.py` | Timing of partial detection in the stage kernel (`slos.stage.StageKernel.apply`, route B, docs/DESIGN.md §2.4): the blockwise update of a carried-photon density matrix by an emitter chain, on one device. |

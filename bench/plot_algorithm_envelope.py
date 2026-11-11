@@ -28,7 +28,7 @@ ap.add_argument("--out", default="img/algorithm_envelope")
 ap.add_argument("--target", type=float, default=1.0)
 ap.add_argument("--fit-min-ms", type=float, default=10.0,
                 help="the log-linear fit uses the points at or above this cost only (the small-n points are latency-bound)")
-ap.add_argument("--title", default="Exact Fock samplers on one instance family (Haar U, one H100 PCIe)")
+ap.add_argument("--title", default="Exact single-photon samplers on one instance family (Haar U, one H100 PCIe)")
 args = ap.parse_args()
 
 LABEL = {
@@ -94,7 +94,7 @@ for ax, c in zip(axes[0], ratios):
             ax.plot(seg, [env[n] for n in seg], color="k", lw=2.2, alpha=0.35, zorder=0, label="lower envelope" if i == 0 else None)
     ax.axhline(1.0 / args.target, color="k", ls=":", lw=1)
     ax.set_yscale("log")
-    ax.set_xlabel(f"n (single-photon sources), m = {c:g} n")
+    ax.set_xlabel(f"photonic inputs n (single photons), m = {c:g} n")
     ax.set_ylabel("seconds per exact sample")
     ax.set_title(f"m = {c:g} n")
     ax.grid(alpha=0.3, which="both")

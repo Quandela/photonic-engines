@@ -45,7 +45,7 @@ pytest -q                          # the default suite, CPU
 pytest -q --cov=photonic_engines   # the same, with the coverage gate (floor: 85 %)
 pytest -q --runslow -m slow        # the slow tier: CPU-interpreter sampler checks, 1-3 min each, and long CPU tests
 pytest -q                          # on a CUDA machine: the `gpu` marks stop skipping
-pytest -q --runslow -m gpu         # on a CUDA machine: + the GPU validation scripts, ~2.5 min on an L4
+pytest -q --runslow -m gpu         # on a CUDA machine: + the GPU validation scripts, ~2.5 min on an L4 (contributor's measurement)
 ```
 
 * **default** — everything that runs in seconds on a CPU; CI runs it on every push.

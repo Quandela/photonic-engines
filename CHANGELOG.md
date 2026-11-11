@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.2.2 — 2026-11
+
+No change to the library's behaviour: fixed-seed outputs are those of 0.2.1.
+
+### Tests (contributed in pull request #1)
+- On a host with a CUDA device, the tests that force the Triton kernels now run on the device (before, they built CPU
+  tensors that a compiled Triton kernel cannot take, and failed); the tests that need cupy are skipped without it.
+- The GPU validation scripts and the 10-minute `SequenceKernel` partial-distinguishability test are marked `slow`, so
+  the default run no longer includes them; `pytest --runslow` runs them (`--runslow -m "gpu and slow"` on a GPU host).
+
+### Benchmarks
+- New: `bench/snowman_check.py`, the nested-loop (snowman) check of the delay-line engine, with its test
+  `tests/timeloop/test_snowman.py`; `bench/sbs_unequal_check.py`, an exact-enumeration check of the unequal-source
+  superposed-source chain.
+- `bench/sbs_rso_validate.py --lossy-only` (superposed sources against lossy single photons on the same instance);
+  figure scripts relabelled (`bench/adaptive_toll.py`, `bench/plot_algorithm_envelope.py`), same data.
+- `docs/NONLINEAR.md`: B is the denominator of φ/π (was written φ/2π).
+
+### CI
+- `actions/checkout@v5`, `actions/setup-python@v6`, `ubuntu-24.04` runners.
+- The test job writes a coverage table on its run summary; a coverage badge is published from `main`.
+
+### Documentation
+- README: install line for the `cuda` / `perceval` extras, which GPU path needs which CUDA version, the `slow` and
+  `gpu` test tiers (also in `docs/CONTRIBUTING.md`); CI, PyPI and coverage badges.
+- README citations: author list of the entries corrected; entry for the estimator note added.
+
 ## 0.2.1 — 2026-10
 
 ### Fixed

@@ -5,6 +5,10 @@
 
 # photonic-engines
 
+[![ci](https://github.com/Quandela/photonic-engines/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Quandela/photonic-engines/actions/workflows/ci.yml)
+[![coverage](https://raw.githubusercontent.com/Quandela/photonic-engines/badges/coverage.svg)](https://github.com/Quandela/photonic-engines/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/photonic-engines)](https://pypi.org/project/photonic-engines/)
+
 Exact simulation of linear-optical quantum devices on GPUs: strong simulation (output probabilities) and exact
 sampling for single photons, superposed sources, quantum-dot emitters (photonic cluster and GHZ states), squeezed
 light, adaptive and non-linear interferometers, and time-bin loop devices. All engines share one set of input-state
@@ -22,9 +26,9 @@ pip install "photonic-engines[perceval]"   # + Perceval adapters
 ```
 
 From a clone: `pip install -e ".[dev]"`, or `pip install -e ".[dev,cuda,perceval]"` to run the GPU and Perceval tests
-too (without an extra, its tests are skipped). The GPU samplers need an NVIDIA GPU with CUDA ≥ 12; the `cuda` extra
-installs `cupy-cuda13x`, which needs CUDA 13 (driver ≥ 580). The reference measurements use an H100 PCIe;
-`environment-gpu.txt` pins the environment they were taken with.
+too (without an extra, its tests are skipped). The Triton GPU samplers need an NVIDIA GPU with CUDA ≥ 12; the
+cupy/NVRTC kernels (`backend="cuda"`) come with the `cuda` extra's `cupy-cuda13x`, which needs CUDA 13 (driver
+≥ 580). The reference measurements use an H100 PCIe; `environment-gpu.txt` pins the environment they were taken with.
 
 ## Quick start
 
@@ -96,7 +100,7 @@ runs.
 ```bash
 pytest -q                    # what the installed extras allow; tests needing a missing extra are skipped
 pytest -q --runslow          # + the slow tier: Triton CPU-interpreter checks, long statistical validations
-pytest -q -m gpu             # GPU-only checks, seconds; add --runslow for the GPU validation scripts (~2.5 min)
+pytest -q -m gpu             # GPU-only checks, seconds; add --runslow for the GPU validation scripts (minutes)
 ```
 
 ## Contributing — and the frontier
@@ -117,9 +121,9 @@ If you use photonic-engines in your work, please cite the paper that introduces 
 ```bibtex
 @article{senellart2026frontiers,
   title   = {The simulability frontiers of photonic quantum computing},
-  author  = {Senellart, Jean and Stott, Benjamin and Mezher, Rawad and Wein, Stephen and
+  author  = {Senellart, Jean and Stott, Benjamin and Wein, Stephen and
              Cuenca Gomez, Esperanza and Senellart, Pascale and Emeriau, Pierre-Emmanuel and Mansfield, Shane},
-  journal = {arXiv preprint arXiv:@@RELEASE},
+  journal = {arXiv preprint arXiv:2611.12876},
   year    = {2026}
 }
 ```
@@ -131,8 +135,20 @@ circuits):
 @article{senellart2026exact,
   title   = {Exact sampling beyond {Fock} inputs and linear optics: photon-number superpositions, photonic
              matrix-product states, adaptive and non-linear circuits},
-  author  = {Senellart, Jean and Wein, Stephen and Mezher, Rawad and Emeriau, Pierre-Emmanuel},
-  journal = {arXiv preprint arXiv:@@RELEASE},
+  author  = {Senellart, Jean and Wein, Stephen and Emeriau, Pierre-Emmanuel},
+  journal = {arXiv preprint arXiv:2611.11044},
+  year    = {2026}
+}
+```
+
+and, for the additive-error estimator of amplitudes and probabilities with entangled inputs (`slos/estimate.py`,
+`docs/ESTIMATE.md`):
+
+```bibtex
+@article{senellart2026estimation,
+  title   = {On the estimation of linear-optical amplitudes and probabilities with entangled input states},
+  author  = {Senellart, Jean and Emeriau, Pierre-Emmanuel},
+  journal = {arXiv preprint arXiv:2611.10500},
   year    = {2026}
 }
 ```
